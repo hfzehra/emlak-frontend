@@ -20,16 +20,20 @@ public record UpdatePropertyCommand : IRequest<bool>
 public class UpdatePropertyCommandHandler : IRequestHandler<UpdatePropertyCommand, bool>
 {
     private readonly IAppDbContext _context;
+    private readonly ITenantService _tenantService;
 
-    public UpdatePropertyCommandHandler(IAppDbContext context)
+    public UpdatePropertyCommandHandler(IAppDbContext context, ITenantService tenantService)
     {
         _context = context;
+        _tenantService = tenantService;
     }
 
     public async Task<bool> Handle(UpdatePropertyCommand request, CancellationToken cancellationToken)
     {
+        var currentCompanyId = _tenantService.GetCurrentCompanyId();
+        
         var property = await _context.Properties
-            .FirstOrDefaultAsync(p => p.Id == request.Id, cancellationToken);
+            .FirstOrDefaultAsync(p => p.Id == request.Id && p.CompanyId == currentCompanyId, cancellationToken);
 
         if (property == null)
             return false;

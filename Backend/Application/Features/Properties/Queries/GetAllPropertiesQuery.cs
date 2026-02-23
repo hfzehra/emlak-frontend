@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces;
+﻿﻿using Application.Common.Interfaces;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -10,15 +10,20 @@ public record GetAllPropertiesQuery : IRequest<List<PropertyDto>>;
 public class GetAllPropertiesQueryHandler : IRequestHandler<GetAllPropertiesQuery, List<PropertyDto>>
 {
     private readonly IAppDbContext _context;
+    private readonly ITenantService _tenantService;
 
-    public GetAllPropertiesQueryHandler(IAppDbContext context)
+    public GetAllPropertiesQueryHandler(IAppDbContext context, ITenantService tenantService)
     {
         _context = context;
+        _tenantService = tenantService;
     }
 
     public async Task<List<PropertyDto>> Handle(GetAllPropertiesQuery request, CancellationToken cancellationToken)
     {
+        var currentCompanyId = _tenantService.GetCurrentCompanyId();
+        
         var properties = await _context.Properties
+            .Where(p => p.CompanyId == currentCompanyId && !p.IsDeleted)
             .Select(p => new PropertyDto
             {
                 Id = p.Id,
