@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces;
+﻿﻿using Application.Common.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,14 +7,15 @@ namespace Application.Features.Properties.Commands;
 public record UpdatePropertyCommand : IRequest<bool>
 {
     public Guid Id { get; init; }
-    public string Title { get; init; } = string.Empty;
-    public string Description { get; init; } = string.Empty;
     public string Address { get; init; } = string.Empty;
     public decimal Price { get; init; }
     public int RoomCount { get; init; }
     public int Area { get; init; }
     public string PropertyType { get; init; } = string.Empty;
     public string Status { get; init; } = string.Empty;
+    public DateTime RentDate { get; init; }
+    public string TenantName { get; init; } = string.Empty;
+    public Guid? HomeownerId { get; init; }
 }
 
 public class UpdatePropertyCommandHandler : IRequestHandler<UpdatePropertyCommand, bool>
@@ -38,14 +39,15 @@ public class UpdatePropertyCommandHandler : IRequestHandler<UpdatePropertyComman
         if (property == null)
             return false;
 
-        property.Title = request.Title;
-        property.Description = request.Description;
         property.Address = request.Address;
         property.Price = request.Price;
         property.RoomCount = request.RoomCount;
         property.Area = request.Area;
         property.PropertyType = request.PropertyType;
         property.Status = request.Status;
+        property.RentDate = request.RentDate;
+        property.TenantName = request.TenantName;
+        property.HomeownerId = request.HomeownerId;
 
         await _context.SaveChangesAsync(cancellationToken);
         return true;

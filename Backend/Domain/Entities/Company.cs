@@ -1,4 +1,4 @@
-﻿namespace Domain.Entities;
+﻿﻿namespace Domain.Entities;
 
 // Company is the tenant itself, so it should not inherit from BaseEntity
 // which includes CompanyId
@@ -16,5 +16,6 @@ public class Company
     
     // Navigation Properties
     public ICollection<Property> Properties { get; set; } = new List<Property>();
+    public ICollection<Homeowner> Homeowners { get; set; } = new List<Homeowner>();
 }
 

@@ -1,37 +1,25 @@
-import { useState } from 'react';
-import { PropertyList } from './features/properties/components/PropertyList';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { MainLayout } from './components/Layout/MainLayout';
+import { Dashboard } from './pages/Dashboard/Dashboard';
+import { Calendar } from './pages/Calendar/Calendar';
+import { Properties } from './pages/Properties/Properties';
 import { CompanyList } from './features/companies/components/CompanyList';
+import { Homeowners } from './pages/Homeowners/Homeowners';
 import './App.css';
 
 function App() {
-  const [activeTab, setActiveTab] = useState<'companies' | 'properties'>('companies');
-
   return (
-    <div className="app">
-      <nav className="app-nav">
-        <div className="nav-container">
-          <h1 className="app-title">🏢 Emlak Yönetim Sistemi</h1>
-          <div className="nav-tabs">
-            <button 
-              className={`nav-tab ${activeTab === 'companies' ? 'active' : ''}`}
-              onClick={() => setActiveTab('companies')}
-            >
-              Şirketler
-            </button>
-            <button 
-              className={`nav-tab ${activeTab === 'properties' ? 'active' : ''}`}
-              onClick={() => setActiveTab('properties')}
-            >
-              Mülkler
-            </button>
-          </div>
-        </div>
-      </nav>
-      
-      <main className="app-main">
-        {activeTab === 'companies' ? <CompanyList /> : <PropertyList />}
-      </main>
-    </div>
+    <Router>
+      <Routes>
+        <Route path="/" element={<MainLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="sirketler" element={<CompanyList />} />
+          <Route path="takvim" element={<Calendar />} />
+          <Route path="mulkler" element={<Properties />} />
+          <Route path="ev-sahibi" element={<Homeowners />} />
+        </Route>
+      </Routes>
+    </Router>
   );
 }
 

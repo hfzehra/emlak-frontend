@@ -17,6 +17,7 @@ public class AppDbContext : DbContext, IAppDbContext
 
     public DbSet<Company> Companies { get; set; } = null!;
     public DbSet<Property> Properties { get; set; } = null!;
+    public DbSet<Homeowner> Homeowners { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -32,17 +33,36 @@ public class AppDbContext : DbContext, IAppDbContext
                   .WithOne(e => e.Company)
                   .HasForeignKey(e => e.CompanyId)
                   .OnDelete(DeleteBehavior.Restrict);
+            entity.HasMany(e => e.Homeowners)
+                  .WithOne(e => e.Company)
+                  .HasForeignKey(e => e.CompanyId)
+                  .OnDelete(DeleteBehavior.Restrict);
             
             // Company is the tenant itself, only filter by IsDeleted
             entity.HasQueryFilter(c => !c.IsDeleted);
+        });
+
+        // Homeowner Configuration
+        modelBuilder.Entity<Homeowner>(entity =>
+        {
+            entity.HasKey(e => e.Id);
+            entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+            entity.HasMany(e => e.Properties)
+                  .WithOne(e => e.Homeowner)
+                  .HasForeignKey(e => e.HomeownerId)
+                  .OnDelete(DeleteBehavior.Restrict);
         });
 
         // Property Configuration
         modelBuilder.Entity<Property>(entity =>
         {
             entity.HasKey(e => e.Id);
-            entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.PropertyNumber).IsRequired().HasMaxLength(50);
+            entity.HasIndex(e => e.PropertyNumber).IsUnique();
             entity.Property(e => e.Price).HasColumnType("decimal(18,2)");
+            entity.Property(e => e.TenantName).IsRequired().HasMaxLength(200);
+            entity.Property(e => e.RentDate).IsRequired();
+            entity.Property(e => e.HomeownerId).IsRequired(false);
             
             // Multi-tenancy Query Filter
             entity.HasQueryFilter(p => p.CompanyId == _tenantService.GetCurrentCompanyId() && !p.IsDeleted);

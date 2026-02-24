@@ -1,4 +1,4 @@
-﻿using Application.Common.Interfaces;
+﻿﻿using Application.Common.Interfaces;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,18 +22,23 @@ public class GetPropertyByIdQueryHandler : IRequestHandler<GetPropertyByIdQuery,
         var currentCompanyId = _tenantService.GetCurrentCompanyId();
         
         var property = await _context.Properties
+            .Include(p => p.Homeowner)
             .Where(p => p.Id == request.Id && p.CompanyId == currentCompanyId && !p.IsDeleted)
             .Select(p => new PropertyDto
             {
                 Id = p.Id,
-                Title = p.Title,
-                Description = p.Description,
+                PropertyNumber = p.PropertyNumber,
                 Address = p.Address,
                 Price = p.Price,
                 RoomCount = p.RoomCount,
                 Area = p.Area,
                 PropertyType = p.PropertyType,
                 Status = p.Status,
+                RentDate = p.RentDate,
+                TenantName = p.TenantName,
+                HomeownerId = p.HomeownerId,
+                HomeownerName = p.Homeowner != null ? p.Homeowner.Name : string.Empty,
+                CompanyId = p.CompanyId,
                 CreatedAt = p.CreatedAt
             })
             .FirstOrDefaultAsync(cancellationToken);

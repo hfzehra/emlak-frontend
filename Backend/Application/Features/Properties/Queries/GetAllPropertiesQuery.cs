@@ -1,4 +1,4 @@
-﻿﻿using Application.Common.Interfaces;
+﻿﻿﻿﻿using Application.Common.Interfaces;
 using Domain.Entities;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
@@ -23,18 +23,23 @@ public class GetAllPropertiesQueryHandler : IRequestHandler<GetAllPropertiesQuer
         var currentCompanyId = _tenantService.GetCurrentCompanyId();
         
         var properties = await _context.Properties
+            .Include(p => p.Homeowner)
             .Where(p => p.CompanyId == currentCompanyId && !p.IsDeleted)
             .Select(p => new PropertyDto
             {
                 Id = p.Id,
-                Title = p.Title,
-                Description = p.Description,
+                PropertyNumber = p.PropertyNumber,
                 Address = p.Address,
                 Price = p.Price,
                 RoomCount = p.RoomCount,
                 Area = p.Area,
                 PropertyType = p.PropertyType,
                 Status = p.Status,
+                RentDate = p.RentDate,
+                TenantName = p.TenantName,
+                HomeownerId = p.HomeownerId,
+                HomeownerName = p.Homeowner != null ? p.Homeowner.Name : "Belirtilmemiş",
+                CompanyId = p.CompanyId,
                 CreatedAt = p.CreatedAt
             })
             .ToListAsync(cancellationToken);
@@ -46,14 +51,18 @@ public class GetAllPropertiesQueryHandler : IRequestHandler<GetAllPropertiesQuer
 public class PropertyDto
 {
     public Guid Id { get; set; }
-    public string Title { get; set; } = string.Empty;
-    public string Description { get; set; } = string.Empty;
+    public string PropertyNumber { get; set; } = string.Empty;
     public string Address { get; set; } = string.Empty;
     public decimal Price { get; set; }
     public int RoomCount { get; set; }
     public int Area { get; set; }
     public string PropertyType { get; set; } = string.Empty;
     public string Status { get; set; } = string.Empty;
+    public DateTime RentDate { get; set; }
+    public string TenantName { get; set; } = string.Empty;
+    public Guid? HomeownerId { get; set; }
+    public string HomeownerName { get; set; } = string.Empty;
+    public Guid CompanyId { get; set; }
     public DateTime CreatedAt { get; set; }
 }
 

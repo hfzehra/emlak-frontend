@@ -1,38 +1,44 @@
-﻿﻿import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+﻿﻿﻿import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export interface Property {
   id: string;
-  title: string;
-  description: string;
+  propertyNumber: string;
   address: string;
   price: number;
   roomCount: number;
   area: number;
   propertyType: string;
   status: string;
+  rentDate: string;
+  tenantName: string;
+  homeownerName: string;
+  companyId: string;
   createdAt: string;
+  updatedAt: string;
 }
 
 export interface CreatePropertyRequest {
-  title: string;
-  description: string;
   address: string;
   price: number;
   roomCount: number;
   area: number;
   propertyType: string;
+  rentDate: string;
+  tenantName: string;
+  homeownerId?: string;
 }
 
 export interface UpdatePropertyRequest {
   id: string;
-  title: string;
-  description: string;
   address: string;
   price: number;
   roomCount: number;
   area: number;
   propertyType: string;
   status: string;
+  rentDate: string;
+  tenantName: string;
+  homeownerId?: string;
 }
 
 export const propertyApi = createApi({

@@ -1,0 +1,2 @@
+﻿export { Properties } from './Properties';
+
