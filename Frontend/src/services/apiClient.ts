@@ -2,6 +2,10 @@
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5038/api';
 
+// Debug: Environment variable kontrolü
+console.log('🌍 API Base URL:', API_BASE);
+console.log('🔧 VITE_API_URL:', import.meta.env.VITE_API_URL);
+
 export const apiClient = axios.create({ baseURL: API_BASE });
 
 apiClient.interceptors.request.use((config) => {
