@@ -11,6 +11,16 @@
   color: #1a1a1a;
 }
 
+.loading-page {
+  display: flex; align-items: center; justify-content: center;
+  height: 60vh; font-size: 1.2rem; color: #6b7280;
+}
+
+.stat-card.gray { background: linear-gradient(135deg, #6b7280, #4b5563); }
+
+.status-badge.kirada { background: #dcfce7; color: #16a34a; }
+.status-badge.bos { background: #f3f4f6; color: #6b7280; }
+
 .dashboard-grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);

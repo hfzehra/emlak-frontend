@@ -1,27 +1,34 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { MainLayout } from './components/Layout/MainLayout';
+import { ProtectedRoute } from './components/ProtectedRoute';
 import { Dashboard } from './pages/Dashboard/Dashboard';
 import { Calendar } from './pages/Calendar/Calendar';
 import { Properties } from './pages/Properties/Properties';
-import { CompanyList } from './features/companies/components/CompanyList';
-import { Homeowners } from './pages/Homeowners/Homeowners';
+import { PropertyWizard } from './pages/Properties/Wizard/PropertyWizard';
+import { Persons } from './pages/Persons/Persons';
+import { SuperAdmin } from './pages/SuperAdmin/SuperAdmin';
+import { Login } from './pages/Login/Login';
+import { Register } from './pages/Register/Register';
 import './App.css';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<MainLayout />}>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
           <Route index element={<Dashboard />} />
-          <Route path="sirketler" element={<CompanyList />} />
           <Route path="takvim" element={<Calendar />} />
           <Route path="mulkler" element={<Properties />} />
-          <Route path="ev-sahibi" element={<Homeowners />} />
+          <Route path="mulkler/yeni" element={<PropertyWizard />} />
+          <Route path="kisiler" element={<Persons />} />
+          <Route path="super-admin" element={<ProtectedRoute requiredRole="SuperAdmin"><SuperAdmin /></ProtectedRoute>} />
         </Route>
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>
   );
 }
 
 export default App;
-

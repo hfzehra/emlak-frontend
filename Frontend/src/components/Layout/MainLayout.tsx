@@ -1,19 +1,45 @@
-﻿import { Outlet } from 'react-router-dom';
+﻿import { Outlet, useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 import { Sidebar } from './Sidebar';
+import { NotificationBell } from '../Notifications/NotificationBell';
+import { logout } from '../../features/auth/authSlice';
+import { useAuth } from '../../hooks/useAuth';
+import type { AppDispatch } from '../../app/store';
 import './MainLayout.css';
 
+const BASE_MENU = [
+  { path: '/', icon: '/home.png', label: 'Anasayfa' },
+  { path: '/takvim', icon: '/calendar.png', label: 'Takvim' },
+  { path: '/mulkler', icon: '/house.png', label: 'Mülkler' },
+  { path: '/kisiler', icon: '/person.png', label: 'Kişiler' },
+];
+const SUPER_ADMIN_MENU = [
+  ...BASE_MENU,
+  { path: '/super-admin', icon: '/business.png', label: 'Yönetim' },
+];
+
 export const MainLayout = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
   const handleLogout = () => {
-    localStorage.removeItem('companyId');
-    alert('Çıkış yapıldı!');
+    dispatch(logout());
+    navigate('/login');
   };
+
+  const menuItems = user?.role === 'SuperAdmin' ? SUPER_ADMIN_MENU : BASE_MENU;
 
   return (
     <div className="main-layout">
-      <Sidebar onLogout={handleLogout} />
+      <Sidebar onLogout={handleLogout} menuItems={menuItems} />
       <div className="main-content">
         <div className="content-header">
-          <button className="notification-btn">🔔</button>
+          <div className="header-user">
+            <span className="user-name">{user?.fullName}</span>
+            <span className="user-role">{user?.companyName}</span>
+          </div>
+          <NotificationBell />
         </div>
         <div className="content-body">
           <Outlet />
@@ -22,4 +48,3 @@ export const MainLayout = () => {
     </div>
   );
 };
-

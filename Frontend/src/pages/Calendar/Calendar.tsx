@@ -1,96 +1,99 @@
-﻿import { useState } from 'react';
+﻿import { useState, useEffect } from 'react';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
-import { useGetPropertiesQuery } from '../../services/propertyApi';
+import { apiClient } from '../../services/apiClient';
 import './Calendar.css';
 
-type ValuePiece = Date | null;
-type Value = ValuePiece | [ValuePiece, ValuePiece];
+type Value = Date | null | [Date | null, Date | null];
+
+interface CalendarEvent {
+  date: string; type: string; title: string;
+  description: string; relatedId: string; amount?: number; isPaid: boolean;
+}
+
+const typeColor: Record<string, string> = {
+  ContractEnd: '#f59e0b',
+  RentDue: '#3b82f6',
+  RentOverdue: '#ef4444',
+  RentPaid: '#16a34a',
+};
 
 export const Calendar = () => {
   const [date, setDate] = useState<Value>(new Date());
-  const { data: properties = [] } = useGetPropertiesQuery();
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
 
-  // Belirli bir günde kira tarihi olan mülkleri bul
-  const getTenantsForDate = (checkDate: Date) => {
-    return properties.filter(property => {
-      if (!property.tenantName || !property.rentDate) return false;
-      
-      const rentDate = new Date(property.rentDate);
-      
-      // Sadece tarihi karşılaştır (saat kısmını yok say)
-      return rentDate.getFullYear() === checkDate.getFullYear() &&
-             rentDate.getMonth() === checkDate.getMonth() &&
-             rentDate.getDate() === checkDate.getDate();
+  useEffect(() => {
+    const now = new Date();
+    const from = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
+    const to = new Date(now.getFullYear(), now.getMonth() + 3, 0).toISOString();
+    apiClient.get<CalendarEvent[]>(`/calendar/events?from=${from}&to=${to}`)
+      .then(r => setEvents(r.data)).catch(() => {});
+  }, []);
+
+  const getEventsForDate = (d: Date) =>
+    events.filter(e => {
+      const ed = new Date(e.date);
+      return ed.getFullYear() === d.getFullYear() &&
+             ed.getMonth() === d.getMonth() &&
+             ed.getDate() === d.getDate();
     });
-  };
 
-  // Takvim hücrelerinde özel içerik göstermek için
-  const tileContent = ({ date: tileDate }: { date: Date }) => {
-    const tenants = getTenantsForDate(tileDate);
-    
-    if (tenants.length === 0) return null;
-    
+  const tileContent = ({ date: d }: { date: Date }) => {
+    const dayEvents = getEventsForDate(d);
+    if (!dayEvents.length) return null;
     return (
       <div className="tile-content">
-        {tenants.map((property, idx) => (
-          <div key={idx} className="tenant-badge" title={`${property.tenantName} - ${property.address}`}>
-            📌 {property.tenantName}
+        {dayEvents.slice(0, 2).map((e, i) => (
+          <div key={i} className="tenant-badge" style={{ background: typeColor[e.type] ?? '#6366f1' }} title={e.description}>
+            {e.type === 'ContractEnd' ? '📋' : e.type === 'RentOverdue' ? '🔴' : e.type === 'RentPaid' ? '✅' : '💰'} {e.description.substring(0, 18)}
           </div>
         ))}
+        {dayEvents.length > 2 && <div className="tenant-badge" style={{ background: '#6b7280' }}>+{dayEvents.length - 2}</div>}
       </div>
     );
   };
 
-  // Takvim hücrelerine özel class eklemek için
-  const tileClassName = ({ date: tileDate }: { date: Date }) => {
-    const tenants = getTenantsForDate(tileDate);
-    return tenants.length > 0 ? 'has-tenant' : '';
-  };
+  const tileClassName = ({ date: d }: { date: Date }) =>
+    getEventsForDate(d).length > 0 ? 'has-tenant' : '';
+
+  const upcoming = events
+    .filter(e => new Date(e.date) >= new Date())
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
+    .slice(0, 10);
 
   return (
     <div className="calendar-page">
       <div className="calendar-header">
-        <h1 className="page-title">Takvim - Kira Tarihleri</h1>
-        <button className="notification-icon">🔔</button>
+        <h1 className="page-title">Takvim</h1>
       </div>
-
       <div className="calendar-info">
-        <p className="info-text">
-          📌 Kiracı kira tarihlerini görmek için takvimde gezinin
-        </p>
+        <p className="info-text">📋 Sözleşme bitiş tarihleri, kira vadeleri ve gecikmiş ödemeler</p>
       </div>
-
+      <div className="calendar-legend" style={{ marginBottom: '1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+        {Object.entries(typeColor).map(([type, color]) => (
+          <span key={type} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem' }}>
+            <span style={{ width: 12, height: 12, borderRadius: 3, background: color, display: 'inline-block' }} />
+            {type === 'ContractEnd' ? 'Sözleşme Bitiş' : type === 'RentDue' ? 'Kira Vadesi' : type === 'RentOverdue' ? 'Gecikmiş' : 'Ödendi'}
+          </span>
+        ))}
+      </div>
       <div className="calendar-container">
-        <ReactCalendar
-          onChange={setDate}
-          value={date}
-          locale="tr-TR"
-          tileContent={tileContent}
-          tileClassName={tileClassName}
-          className="custom-calendar"
-        />
+        <ReactCalendar onChange={setDate} value={date} locale="tr-TR"
+          tileContent={tileContent} tileClassName={tileClassName} className="custom-calendar" />
       </div>
-
       <div className="calendar-legend">
-        <h3>Yaklaşan Kira Tarihleri</h3>
+        <h3>Yaklaşan Olaylar</h3>
         <div className="upcoming-rents">
-          {properties
-            .filter(p => p.tenantName && p.rentDate)
-            .sort((a, b) => new Date(a.rentDate).getTime() - new Date(b.rentDate).getTime())
-            .slice(0, 10)
-            .map((property, idx) => (
-              <div key={idx} className="rent-item">
-                <span className="rent-date">
-                  {new Date(property.rentDate).toLocaleDateString('tr-TR')}
-                </span>
-                <span className="rent-tenant">{property.tenantName}</span>
-                <span className="rent-address">{property.address}</span>
-              </div>
-            ))}
+          {upcoming.length === 0 ? <p style={{ color: '#9ca3af' }}>Yaklaşan olay yok.</p> : upcoming.map((e, i) => (
+            <div key={i} className="rent-item" style={{ borderLeftColor: typeColor[e.type] ?? '#6366f1' }}>
+              <span className="rent-date">{new Date(e.date).toLocaleDateString('tr-TR')}</span>
+              <span className="rent-tenant">{e.title}</span>
+              <span className="rent-address">{e.description}</span>
+              {e.amount && <span style={{ fontWeight: 700, color: '#111827', whiteSpace: 'nowrap' }}>{e.amount.toLocaleString('tr-TR')} ₺</span>}
+            </div>
+          ))}
         </div>
       </div>
     </div>
   );
 };
-

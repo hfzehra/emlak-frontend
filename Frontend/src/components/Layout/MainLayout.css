@@ -1,4 +1,4 @@
-﻿.main-layout {
+﻿﻿.main-layout {
   display: flex;
   min-height: 100vh;
   background-color: #f5f6fa;
@@ -16,8 +16,24 @@
   padding: 1rem 2rem;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   display: flex;
-  justify-content: flex-end;
+  justify-content: space-between;
   align-items: center;
+}
+
+.header-user {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-name {
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: #1a1a2e;
+}
+
+.user-role {
+  font-size: 0.78rem;
+  color: #6b7280;
 }
 
 .notification-btn {

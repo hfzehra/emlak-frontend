@@ -1,216 +1,410 @@
-﻿# 🏢 Emlak Yönetim Sistemi (SaaS)
+﻿# 🏠 Emlak SaaS - Frontend
 
-Modern, ölçeklenebilir ve çok kiracılı (multi-tenant) emlak yönetim sistemi.
+**Multi-Tenant Emlak Yönetim Sistemi - React Frontend**
 
-## 🎯 Özellikler
+[![Status](https://img.shields.io/badge/status-production%20ready-success)]()
+[![React](https://img.shields.io/badge/React-19-blue)]()
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-blue)]()
+[![Vercel](https://img.shields.io/badge/Deploy-Vercel-black)]()
 
-- ✅ **Clean Architecture** - Katmanlı mimari ile temiz kod
-- ✅ **CQRS Pattern** - MediatR ile komut/sorgu ayrımı
-- ✅ **Multi-Tenancy** - CompanyId bazlı veri izolasyonu
-- ✅ **Modern Tech Stack** - .NET 8 + React 18 + TypeScript
-- ✅ **Type Safety** - Hem backend hem frontend'de tip güvenliği
-- ✅ **RESTful API** - Swagger/OpenAPI dokümantasyonu
+> **Backend Repository:** https://github.com/hfzehra/emlak-backend
 
-## 🏗️ Mimari
+---
 
-### Backend (.NET 8)
-```
-Backend/
-├── Domain/           # Entity'ler ve domain logic
-├── Application/      # CQRS, MediatR handlers
-├── Infrastructure/   # Database, external services
-└── API/             # REST API endpoints
-```
+## 📌 Özellikler
 
-**Teknolojiler:**
-- .NET 8
-- Entity Framework Core 8
-- MediatR (CQRS)
-- SQL Server
-- Swagger/OpenAPI
+✅ **Multi-Tenant Mimari** - Her şirket kendi verilerini görür  
+✅ **Adım Adım Mülk Ekleme** - 4 adımlı wizard  
+✅ **Şehir/İlçe API** - Otomatik şehir ve ilçe seçimi  
+✅ **Dashboard** - Gerçek zamanlı istatistikler  
+✅ **Responsive Design** - Mobil uyumlu
 
-### Frontend (React + TypeScript)
-```
-Frontend/
-├── src/
-│   ├── app/         # Redux store
-│   ├── features/    # Feature-based components
-│   ├── services/    # RTK Query API
-│   ├── components/  # Shared components
-│   └── hooks/       # Custom hooks
-```
-
-**Teknolojiler:**
-- React 18
-- TypeScript
-- Vite
-- Redux Toolkit
-- RTK Query
+---
 
 ## 🚀 Hızlı Başlangıç
 
 ### Gereksinimler
-- .NET 8 SDK
 - Node.js 18+
-- SQL Server (LocalDB veya Express)
+- npm veya yarn
 
-### 1️⃣ Backend Kurulumu
-
-```bash
-# Backend klasörüne git
-cd Backend
-
-# Bağımlılıkları yükle
-dotnet restore
-
-# Database migration'ı oluştur ve uygula
-cd Infrastructure
-dotnet ef migrations add InitialCreate --startup-project ../API
-dotnet ef database update --startup-project ../API
-
-# API'yi çalıştır
-cd ../API
-dotnet run
-```
-
-Backend şu adreste çalışacak: `http://localhost:5000`  
-Swagger UI: `http://localhost:5000/swagger`
-
-### 2️⃣ Frontend Kurulumu
+### 1. Kurulum
 
 ```bash
-# Frontend klasörüne git
-cd Frontend
-
-# Bağımlılıkları yükle
+git clone https://github.com/hfzehra/emlak-project.git
+cd emlak-project/Frontend
 npm install
+```
 
-# Dev server'ı başlat
+### 2. Environment Ayarları
+
+`.env.development` oluştur:
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+### 3. Çalıştır
+
+```bash
 npm run dev
 ```
 
-Frontend şu adreste çalışacak: `http://localhost:5173`
+Frontend: http://localhost:5173
 
-### 3️⃣ Test Verisi Ekleme
+---
 
-SQL Server'da bir test şirketi oluşturun:
+## 🌐 Vercel Deployment
 
-```sql
-INSERT INTO Companies (Id, Name, Email, Phone, Address, CreatedAt, IsActive)
-VALUES (NEWID(), 'Test Emlak Ltd.', 'info@testemlak.com', '05551234567', 'İstanbul, Türkiye', GETUTCDATE(), 1);
+### Hızlı Deploy
+1. Vercel'e giriş yap: https://vercel.com
+2. "Import Project" → GitHub repo seç
+3. Environment Variable ekle:
+   ```
+   VITE_API_URL=https://your-backend.railway.app
+   ```
+4. "Deploy" tıkla
 
--- CompanyId'yi not edin
-SELECT TOP 1 Id, Name FROM Companies ORDER BY CreatedAt DESC;
+Detaylı rehber: `Frontend/docs/VERCEL_DEPLOYMENT.md`
+
+---
+
+## 🏗️ Teknolojiler
+
+### Core
+- **React 19** + **TypeScript**
+- **Vite** - Build tool
+- **Redux Toolkit** - State management
+- **React Router** - Routing
+
+### UI & Styling
+- Custom CSS
+- Responsive Design
+
+### API & Data
+- **Axios** - HTTP client
+- **React Hook Form** - Form yönetimi
+
+### External APIs
+- **Türkiye API** (https://turkiyeapi.dev) - Şehir/İlçe listesi
+
+---
+
+## 📁 Proje Yapısı
+
+```
+Frontend/
+├── src/
+│   ├── app/              # Redux store
+│   ├── assets/           # Görseller
+│   ├── components/       # Ortak bileşenler
+│   ├── features/         # Feature modülleri
+│   ├── hooks/            # Custom hooks
+│   ├── pages/            # Sayfa bileşenleri
+│   │   ├── Login/
+│   │   ├── Register/
+│   │   ├── Dashboard/
+│   │   ├── Properties/
+│   │   │   └── Wizard/   # 4 adımlı mülk ekleme
+│   │   └── ...
+│   └── services/         # API servisleri
+│       ├── apiClient.ts
+│       ├── authApi.ts
+│       └── turkeyApi.ts  # Şehir/İlçe API
+└── docs/
+    └── VERCEL_DEPLOYMENT.md
 ```
 
-Browser Console'da CompanyId'yi set edin:
-```javascript
-localStorage.setItem('companyId', 'YOUR-COMPANY-GUID-HERE');
+---
+
+## 🎯 Kullanım
+
+### 1. Kayıt Ol
+```
+http://localhost:5173/register
+```
+- Şirket adı, email, şifre gir
+- Otomatik admin hesabı oluşturulur
+
+### 2. Giriş Yap
+```
+http://localhost:5173/login
 ```
 
-Sayfayı yenileyin ve mülk eklemeye başlayın! 🎉
+### 3. Dashboard
+```
+http://localhost:5173/
+```
+- Toplam mülk sayısı
+- Kirada/Boş durumu
+- Aylık kira istatistikleri
 
-## 📚 Dokümantasyon
+### 4. Mülk Ekle
+```
+http://localhost:5173/mulkler/yeni
+```
 
-Her klasörde detaylı README dosyaları bulunmaktadır:
-- [Backend README](./Backend/README.md)
-- [Frontend README](./Frontend/README.md)
+**4 Adım:**
+1. Mülk Sahibi (yeni ekle veya mevcut seç)
+2. Kiralık Mı? (kiracı bilgileri)
+3. Mülk Bilgisi (şehir/ilçe dropdown)
+4. Finansal (kira tutarı)
 
-## 🔐 Multi-Tenancy Nasıl Çalışır?
+---
 
-### Geliştirme Ortamı
-- Frontend: localStorage'dan `companyId` alır ve her istekte `X-Company-Id` header'ına ekler
-- Backend: Header'dan CompanyId'yi okur ve tüm database sorgularını otomatik filtreler
+## 🌍 API Entegrasyonu
 
-### Production Ortamı
-- JWT token içinde `CompanyId` claim'i bulunmalı
-- Backend otomatik olarak her sorguya CompanyId filtresi uygular
-- Veri izolasyonu garanti altına alınır
+### apiClient.ts
+```typescript
+const baseURL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
-## 📊 API Endpoints
+export const apiClient = axios.create({
+  baseURL: `${baseURL}/api`,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+```
 
-### Properties (Mülkler)
-- `GET /api/properties` - Tüm mülkleri listele (filtrelenmiş)
-- `POST /api/properties` - Yeni mülk ekle
+### Environment Variables
+```env
+# Development
+VITE_API_URL=http://localhost:5000
 
-## 🎨 UI Özellikleri
+# Production (Vercel)
+VITE_API_URL=https://your-backend.railway.app
+```
 
-- Modern ve responsive tasarım
-- Form validasyonu
-- Loading states
-- Error handling
-- Real-time updates (RTK Query cache)
+---
 
-## 🛠️ Geliştirme
+## 🧪 Build & Test
 
-### Backend Geliştirme
+### Development
 ```bash
-cd Backend
-dotnet watch run --project API
-```
-
-### Frontend Geliştirme
-```bash
-cd Frontend
 npm run dev
 ```
 
-## 📝 Yeni Feature Ekleme
+### Production Build
+```bash
+npm run build
+```
 
-### Backend (CQRS)
-1. `Domain/Entities` - Yeni entity ekle
-2. `Application/Features/[Feature]/Commands` - Command handler yaz
-3. `Application/Features/[Feature]/Queries` - Query handler yaz
-4. `API/Controllers` - Controller endpoint ekle
+### Preview Build
+```bash
+npm run preview
+```
 
-### Frontend (Feature-based)
-1. `src/features/[feature]/components` - Component'ler
-2. `src/services/[feature]Api.ts` - RTK Query endpoints
-3. Redux store'a entegre et
+### Lint
+```bash
+npm run lint
+```
+
+---
+
+## 📝 Deployment Checklist
+
+- [ ] Backend Railway'de deploy edildi
+- [ ] `VITE_API_URL` environment variable Vercel'e eklendi
+- [ ] `vercel.json` oluşturuldu
+- [ ] Build başarılı
+- [ ] API bağlantısı test edildi
+- [ ] Login/Register çalışıyor
+- [ ] Mülk ekleme çalışıyor
+- [ ] Backend CORS'a frontend URL eklendi
+
+---
+
+## 🔗 İlgili Linkler
+
+- **Backend Repo:** https://github.com/hfzehra/emlak-backend
+- **Frontend Demo:** https://emlak-project.vercel.app (yakında)
+- **Backend API:** https://your-backend.railway.app (yakında)
+
+---
+
+## 📞 İletişim
+
+**Geliştirici:** H.F. Zehra Uysal  
+**GitHub:** [@hfzehra](https://github.com/hfzehra)
+
+---
+
+## 📄 Lisans
+
+Bu proje özel bir projedir.
+
+---
+
+**Version:** 1.1.0  
+**Son Güncelleme:** 2026-03-04  
+**Durum:** ✅ Production Ready
+
+---
+
+## 📖 Dokümantasyon
+
+- **[QUICKSTART_GUNCEL.md](docs/QUICKSTART_GUNCEL.md)** - Hızlı başlangıç
+- **[DUZELTMELER.md](docs/DUZELTMELER.md)** - Son düzeltmeler
+- **[TEST_KOMUTLARI.md](docs/TEST_KOMUTLARI.md)** - Test senaryoları
+- **[FINAL_RAPOR.md](docs/FINAL_RAPOR.md)** - Final durum raporu
+- **[Backend/docs/](Backend/docs/)** - Backend dokümantasyonu
+
+---
+
+## 🏗️ Mimari
+
+### Backend
+- **Clean Architecture** + **CQRS**
+- **MediatR** - Command/Query separation
+- **FluentValidation** - Doğrulama
+- **EF Core** - ORM
+- **JWT** - Authentication
+
+### Frontend
+- **React 19** + **TypeScript**
+- **Redux Toolkit** - State management
+- **React Router** - Routing
+- **Axios** - HTTP client
+- **Vite** - Build tool
+
+### Database
+- **PostgreSQL** (Supabase)
+- Multi-tenant with TenantId
+- Query filters
+
+---
+
+## 📊 Veritabanı Şeması
+
+```
+Company (Şirket)
+  ├─ User (Kullanıcılar)
+  ├─ Property (Mülkler)
+  │   ├─ Person (Sahip/Kiracı)
+  │   ├─ RentalContract (Kira Sözleşmeleri)
+  │   │   └─ RentPayment (Kira Ödemeleri)
+  │   └─ Notification (Bildirimler)
+  └─ CalendarEvent (Takvim)
+```
+
+---
+
+## 🎯 Kullanım
+
+### 1. Şirket Kaydı
+- http://localhost:5173/register
+- Şirket bilgilerini gir
+- Otomatik admin hesabı oluşturulur
+
+### 2. Mülk Ekleme
+
+**Adım 1: Mülk Sahibi**
+- Yeni sahip ekle veya mevcut seç
+
+**Adım 2: Kiralık Mı?**
+- Boş → Sadece mülk bilgileri
+- Kirada → Kiracı + sözleşme bilgileri
+
+**Adım 3: Mülk Bilgisi**
+- Şehir/İlçe dropdown'dan seç
+- Adres, mülk tipi, oda sayısı
+
+**Adım 4: Finansal**
+- Aylık kira tutarı (tek sefer)
+- Vade günü
+- Komisyon (opsiyonel)
+
+### 3. Dashboard
+- Toplam mülk sayısı
+- Kirada/Boş durumu
+- Bu ay tahsil edilen kira
+- Son eklenen mülkler
+
+---
+
+## 🔐 Roller
+
+- **SuperAdmin** - Tüm şirketleri görebilir
+- **CompanyAdmin** - Şirket yöneticisi
+- **CompanyUser** - Şirket kullanıcısı
+
+---
+
+## 🌍 Şehir/İlçe API
+
+Türkiye API kullanılıyor: https://turkiyeapi.dev
+
+**Özellikler:**
+- 81 il
+- Tüm ilçeler
+- Türkçe sıralama
+- Otomatik yükleme
+
+**Not:** İnternet bağlantısı gereklidir.
+
+---
 
 ## 🧪 Test
 
-```bash
-# Backend tests
+### Backend Test
+```powershell
 cd Backend
 dotnet test
-
-# Frontend tests (kurulacak)
-cd Frontend
-npm test
 ```
 
-## 📦 Production Build
-
-### Backend
-```bash
-cd Backend/API
-dotnet publish -c Release -o ./publish
-```
-
-### Frontend
-```bash
+### Frontend Test
+```powershell
 cd Frontend
 npm run build
 ```
 
-## 🤝 Katkıda Bulunma
-
-1. Fork edin
-2. Feature branch oluşturun (`git checkout -b feature/amazing-feature`)
-3. Commit edin (`git commit -m 'feat: Add amazing feature'`)
-4. Push edin (`git push origin feature/amazing-feature`)
-5. Pull Request açın
-
-## 📄 Lisans
-
-Bu proje MIT lisansı altındadır.
-
-## 👨‍💻 Geliştirici
-
-Tek başına geliştirilen bu proje, modern yazılım mimarisi prensiplerini göstermek için oluşturulmuştur.
+### Manuel Test
+`docs/TEST_KOMUTLARI.md` dosyasına bakın.
 
 ---
 
-**Not:** Bu proje Clean Architecture, CQRS ve Multi-tenancy gibi enterprise-level pattern'leri öğrenmek için mükemmel bir başlangıç noktasıdır.
+## 📝 Yapılan Son Değişiklikler (2026-03-04)
+
+✅ Login hata mesajları düzeltildi  
+✅ Çift kira girişi sorunu çözüldü  
+✅ Şehir/İlçe API entegre edildi  
+✅ Kiracı validasyonu güçlendirildi  
+✅ Eski dosyalar temizlendi  
+✅ Build hataları giderildi  
+
+Detaylar için: `docs/FINAL_RAPOR.md`
+
+---
+
+## 🤝 Katkıda Bulunma
+
+1. Fork yapın
+2. Feature branch oluşturun (`git checkout -b feature/amazing`)
+3. Commit yapın (`git commit -m 'feat: amazing feature'`)
+4. Push yapın (`git push origin feature/amazing`)
+5. Pull Request açın
+
+---
+
+## 📄 Lisans
+
+Bu proje özel bir projedir.
+
+---
+
+## 📞 İletişim
+
+**Proje Sahibi:** [Your Name]  
+**Email:** [your-email]  
+**GitHub:** [your-github]
+
+---
+
+## ⭐ Yıldız Vermeyi Unutmayın!
+
+Eğer bu proje işinize yaradıysa, lütfen ⭐ verin!
+
+---
+
+**Version:** 1.1.0  
+**Son Güncelleme:** 2026-03-04  
+**Durum:** ✅ Production Ready
 

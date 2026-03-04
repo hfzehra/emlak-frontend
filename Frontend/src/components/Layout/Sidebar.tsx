@@ -1,27 +1,33 @@
 import { Link, useLocation } from 'react-router-dom';
 import './Sidebar.css';
 
-interface SidebarProps {
-  onLogout?: () => void;
+interface MenuItem {
+  path: string;
+  icon: string;
+  label: string;
 }
 
-export const Sidebar = ({ onLogout }: SidebarProps) => {
-  const location = useLocation();
+interface SidebarProps {
+  onLogout?: () => void;
+  menuItems?: MenuItem[];
+  readonly _v?: never;
+}
 
-  const menuItems = [
-    { path: '/', icon: '/home.png', label: 'Anasayfa' },
-    { path: '/sirketler', icon: '/business.png', label: 'Sirketler' },
-    { path: '/takvim', icon: '/calendar.png', label: 'Takvim' },
-    { path: '/mulkler', icon: '/house.png', label: 'Mulkler' },
-    { path: '/ev-sahibi', icon: '/person.png', label: 'Ev sahibi' },
-  ];
+const DEFAULT_MENU: MenuItem[] = [
+  { path: '/', icon: '/home.png', label: 'Anasayfa' },
+  { path: '/takvim', icon: '/calendar.png', label: 'Takvim' },
+  { path: '/mulkler', icon: '/house.png', label: 'Mülkler' },
+  { path: '/kisiler', icon: '/person.png', label: 'Kişiler' },
+];
+
+export const Sidebar = ({ onLogout, menuItems = DEFAULT_MENU }: SidebarProps) => {
+  const location = useLocation();
 
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <h2>EMLAK ADMIN PANEL</h2>
+        <h2>🏠 EMLAK</h2>
       </div>
-
       <nav className="sidebar-nav">
         {menuItems.map((item) => (
           <Link
@@ -34,11 +40,10 @@ export const Sidebar = ({ onLogout }: SidebarProps) => {
           </Link>
         ))}
       </nav>
-
       <div className="sidebar-footer">
         <button className="logout-btn" onClick={onLogout}>
           <img src="/logout.png" alt="Logout" className="sidebar-icon" />
-          <span className="sidebar-label">Logout</span>
+          <span className="sidebar-label">Çıkış</span>
         </button>
       </div>
     </div>

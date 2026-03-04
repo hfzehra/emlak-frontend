@@ -1,4 +1,4 @@
-﻿﻿﻿import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+﻿import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export interface Property {
   id: string;
@@ -46,16 +46,16 @@ export const propertyApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: 'http://localhost:5038/api',
     prepareHeaders: (headers) => {
-      // JWT token veya CompanyId header'a eklenecek
+      // JWT token header'a ekle
       const token = localStorage.getItem('token');
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       }
       
-      // Geliştirme aşamasında test için CompanyId header'ı
-      const companyId = localStorage.getItem('companyId');
-      if (companyId) {
-        headers.set('X-Company-Id', companyId);
+      // TenantId header'ı (backend'te fallback olarak kullanılıyor)
+      const tenantId = localStorage.getItem('tenantId');
+      if (tenantId) {
+        headers.set('X-Company-Id', tenantId);
       }
       
       return headers;
