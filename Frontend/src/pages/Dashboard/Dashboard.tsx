@@ -1,7 +1,43 @@
-﻿﻿import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../services/apiClient';
 import './Dashboard.css';
+
+// SVG Icons
+const BuildingIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/>
+    <path d="M9 22v-4h6v4"/>
+    <path d="M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01"/>
+  </svg>
+);
+
+const HomeIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+    <polyline points="9 22 9 12 15 12 15 22"/>
+  </svg>
+);
+
+const KeyIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+  </svg>
+);
+
+const CheckCircleIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+    <polyline points="22 4 12 14.01 9 11.01"/>
+  </svg>
+);
+
+const ClockIcon = () => (
+  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <circle cx="12" cy="12" r="10"/>
+    <polyline points="12 6 12 12 16 14"/>
+  </svg>
+);
 
 interface DashboardStats {
   totalProperties: number; rentedProperties: number; vacantProperties: number;
@@ -44,40 +80,125 @@ export const Dashboard = () => {
       .finally(() => setLoading(false));
   }, []);
 
-  if (loading) return <div className="loading-page">Yükleniyor...</div>;
-  if (error) return <div className="error-page" style={{padding: '2rem', textAlign: 'center', color: '#dc2626'}}>❌ {error}</div>;
+  if (loading) return <div className="dashboard-loading"><div className="loading-spinner"></div><p>Yükleniyor...</p></div>;
+  if (error) return <div className="dashboard-error"><span className="error-icon">!</span><p>{error}</p></div>;
+
+  const statsCards = [
+    { 
+      key: 'total', 
+      icon: <BuildingIcon />, 
+      label: 'Toplam Mülk', 
+      value: stats?.totalProperties ?? 0, 
+      type: 'primary' 
+    },
+    { 
+      key: 'rented', 
+      icon: <HomeIcon />, 
+      label: 'Kirada', 
+      value: stats?.rentedProperties ?? 0, 
+      type: 'secondary' 
+    },
+    { 
+      key: 'vacant', 
+      icon: <KeyIcon />, 
+      label: 'Boş', 
+      value: stats?.vacantProperties ?? 0, 
+      type: 'accent' 
+    },
+    { 
+      key: 'paid', 
+      icon: <CheckCircleIcon />, 
+      label: 'Tahsil Edilen', 
+      value: `${(stats?.paidThisMonth ?? 0).toLocaleString('tr-TR')} ₺`, 
+      type: 'success' 
+    },
+    { 
+      key: 'pending', 
+      icon: <ClockIcon />, 
+      label: 'Bekleyen', 
+      value: `${(stats?.unpaidThisMonth ?? 0).toLocaleString('tr-TR')} ₺`, 
+      type: 'warning' 
+    },
+  ];
 
   return (
     <div className="dashboard">
-      <h1 className="page-title">Anasayfa</h1>
-      <div className="stats-row">
-        <div className="stat-card blue"><div className="stat-icon">🏢</div><div className="stat-content"><h3>Toplam Mülk</h3><p className="stat-number">{stats?.totalProperties ?? 0}</p></div></div>
-        <div className="stat-card purple"><div className="stat-icon">🏠</div><div className="stat-content"><h3>Kirada</h3><p className="stat-number">{stats?.rentedProperties ?? 0}</p></div></div>
-        <div className="stat-card gray"><div className="stat-icon">🔑</div><div className="stat-content"><h3>Boş</h3><p className="stat-number">{stats?.vacantProperties ?? 0}</p></div></div>
-        <div className="stat-card green"><div className="stat-icon">✅</div><div className="stat-content"><h3>Tahsil (Bu Ay)</h3><p className="stat-number">{(stats?.paidThisMonth ?? 0).toLocaleString('tr-TR')} ₺</p></div></div>
-        <div className="stat-card orange"><div className="stat-icon">⏳</div><div className="stat-content"><h3>Bekleyen (Bu Ay)</h3><p className="stat-number">{(stats?.unpaidThisMonth ?? 0).toLocaleString('tr-TR')} ₺</p></div></div>
+      <div className="dashboard-header">
+        <h1>Dashboard</h1>
+        <p className="dashboard-subtitle">Mülk yönetim sisteminize hoş geldiniz</p>
       </div>
-      <div className="dashboard-card">
-        <div className="card-header">
-          <h2>📋 Son Eklenen Mülkler</h2>
-          <button className="view-all-btn" onClick={() => navigate('/mulkler')}>Tümünü Gör →</button>
+      
+      <div className="stats-grid">
+        {statsCards.map(card => (
+          <div key={card.key} className={`stat-card stat-card--${card.type}`}>
+            <div className="stat-card__icon">
+              {card.icon}
+            </div>
+            <div className="stat-card__content">
+              <span className="stat-card__label">{card.label}</span>
+              <span className="stat-card__value">{card.value}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="dashboard-section">
+        <div className="section-header">
+          <h2>Son Eklenen Mülkler</h2>
+          <button className="btn-view-all" onClick={() => navigate('/mulkler')}>
+            Tümünü Gör
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M5 12h14M12 5l7 7-7 7"/>
+            </svg>
+          </button>
         </div>
-        <div className="properties-table">
-          <table>
-            <thead><tr><th>Emlak No</th><th>Adres</th><th>Sahibi</th><th>Kiracı</th><th>Kira</th><th>Durum</th></tr></thead>
+        
+        <div className="properties-table-wrapper">
+          <table className="properties-table">
+            <thead>
+              <tr>
+                <th>Emlak No</th>
+                <th>Adres</th>
+                <th>Sahibi</th>
+                <th>Kiracı</th>
+                <th>Kira</th>
+                <th>Durum</th>
+              </tr>
+            </thead>
             <tbody>
-              {!stats?.recentProperties?.length
-                ? <tr><td colSpan={6} className="no-data">Henüz mülk yok.</td></tr>
-                : stats.recentProperties.map(p => (
-                  <tr key={p.id}>
-                    <td><strong>{p.propertyNumber}</strong></td>
-                    <td>{p.district}, {p.city}<br /><small>{p.shortAddress}</small></td>
+              {!stats?.recentProperties?.length ? (
+                <tr>
+                  <td colSpan={6} className="empty-state">
+                    <div className="empty-state__content">
+                      <BuildingIcon />
+                      <p>Henüz mülk eklenmemiş</p>
+                      <button className="btn btn-primary" onClick={() => navigate('/mulkler/yeni')}>
+                        İlk Mülkü Ekle
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ) : (
+                stats.recentProperties.map(p => (
+                  <tr key={p.id} onClick={() => navigate(`/mulkler/${p.id}`)} className="clickable-row">
+                    <td><span className="property-number">{p.propertyNumber}</span></td>
+                    <td>
+                      <div className="address-cell">
+                        <span className="address-main">{p.district}, {p.city}</span>
+                        <span className="address-detail">{p.shortAddress}</span>
+                      </div>
+                    </td>
                     <td>{p.ownerName}</td>
-                    <td>{p.tenantName ?? '-'}</td>
-                    <td>{p.monthlyRent.toLocaleString('tr-TR')} ₺</td>
-                    <td><span className={`status-badge ${p.isRented ? 'kirada' : 'bos'}`}>{p.isRented ? 'Kirada' : 'Boş'}</span></td>
+                    <td>{p.tenantName || <span className="text-muted">—</span>}</td>
+                    <td><span className="rent-amount">{p.monthlyRent.toLocaleString('tr-TR')} ₺</span></td>
+                    <td>
+                      <span className={`status-badge ${p.isRented ? 'status-badge--rented' : 'status-badge--vacant'}`}>
+                        {p.isRented ? 'Kirada' : 'Boş'}
+                      </span>
+                    </td>
                   </tr>
-                ))}
+                ))
+              )}
             </tbody>
           </table>
         </div>

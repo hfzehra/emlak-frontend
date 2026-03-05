@@ -1,7 +1,27 @@
-﻿﻿import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../services/apiClient';
 import './Properties.css';
+
+// Icons
+const PlusIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+);
+
+const SearchIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+  </svg>
+);
+
+const TrashIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="3 6 5 6 21 6"/>
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+  </svg>
+);
 
 interface Property {
   id: string; propertyNumber: string; city: string; district: string;
@@ -32,7 +52,8 @@ export const Properties = () => {
 
   useEffect(() => { fetchProperties(); }, [filter]);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (e: React.MouseEvent, id: string) => {
+    e.stopPropagation();
     if (!confirm('Bu mülkü silmek istediğinize emin misiniz?')) return;
     try {
       await apiClient.delete(`/properties/${id}`);
@@ -52,64 +73,104 @@ export const Properties = () => {
   return (
     <div className="properties-page">
       <div className="page-header">
-        <h1 className="page-title">Mülkler</h1>
-        <button className="btn-add" onClick={() => navigate('/mulkler/yeni')}>+ Yeni Mülk</button>
+        <div>
+          <h1>Mülkler</h1>
+          <p className="page-subtitle">Tüm mülklerinizi yönetin</p>
+        </div>
+        <button className="btn btn-primary" onClick={() => navigate('/mulkler/yeni')}>
+          <PlusIcon />
+          Yeni Mülk
+        </button>
       </div>
 
       <div className="filters-bar">
-        <input
-          className="search-input"
-          placeholder="Adres, sahip, emlak no ile ara..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-        />
+        <div className="search-box">
+          <SearchIcon />
+          <input
+            type="text"
+            placeholder="Adres, sahip veya emlak no ile ara..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </div>
         <div className="filter-tabs">
           {(['all', 'rented', 'vacant'] as const).map(f => (
-            <button key={f} className={filter === f ? 'active' : ''} onClick={() => setFilter(f)}>
+            <button
+              key={f}
+              className={`filter-tab ${filter === f ? 'active' : ''}`}
+              onClick={() => setFilter(f)}
+            >
               {f === 'all' ? 'Tümü' : f === 'rented' ? 'Kirada' : 'Boş'}
             </button>
           ))}
         </div>
       </div>
 
-      {error && <div className="error-message" style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '1rem', borderRadius: 8, marginBottom: '1rem', fontSize: '0.9rem' }}>❌ {error}</div>}
+      {error && <div className="error-banner">{error}</div>}
 
-      {loading ? <div className="loading">Yükleniyor...</div> : (
+      {loading ? (
+        <div className="loading-state">
+          <div className="loading-spinner"></div>
+          <p>Yükleniyor...</p>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="empty-state-card">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+            <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/>
+            <path d="M9 22v-4h6v4"/>
+            <path d="M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01"/>
+          </svg>
+          <h3>Mülk bulunamadı</h3>
+          <p>İlk mülkünüzü ekleyerek başlayın</p>
+          <button className="btn btn-primary" onClick={() => navigate('/mulkler/yeni')}>
+            <PlusIcon />
+            Yeni Mülk Ekle
+          </button>
+        </div>
+      ) : (
         <div className="properties-grid">
-          {filtered.length === 0 ? (
-            <div className="empty-state">
-              <p>Mülk bulunamadı.</p>
-              <button className="btn-add" onClick={() => navigate('/mulkler/yeni')}>İlk Mülkü Ekle</button>
-            </div>
-          ) : filtered.map(p => (
-            <div key={p.id} className={`property-card ${p.isRented ? 'rented' : 'vacant'}`}>
-              <div className="property-card-header">
+          {filtered.map(p => (
+            <div 
+              key={p.id} 
+              className="property-card"
+              onClick={() => navigate(`/mulkler/${p.id}`)}
+            >
+              <div className="property-card__header">
                 <span className="property-number">{p.propertyNumber}</span>
-                <span className={`status-chip ${p.isRented ? 'green' : 'gray'}`}>
+                <span className={`status-badge ${p.isRented ? 'status-badge--rented' : 'status-badge--vacant'}`}>
                   {p.isRented ? 'Kirada' : 'Boş'}
                 </span>
               </div>
-              <div className="property-card-body">
-                <h3>{p.district}, {p.city}</h3>
-                <p className="address">{p.shortAddress}</p>
+              <div className="property-card__body">
+                <h3 className="property-location">{p.district}, {p.city}</h3>
+                <p className="property-address">{p.shortAddress}</p>
                 <div className="property-meta">
-                  <span>🏠 {p.propertyType}</span>
-                  {p.roomCount && <span>🚪 {p.roomCount} Oda</span>}
-                  {p.area && <span>📐 {p.area} m²</span>}
+                  <span>{p.propertyType}</span>
+                  {p.roomCount && <span>{p.roomCount} Oda</span>}
+                  {p.area && <span>{p.area} m²</span>}
                 </div>
                 <div className="property-people">
-                  <div><strong>Sahibi:</strong> {p.ownerName}</div>
-                  {p.tenantName && <div><strong>Kiracı:</strong> {p.tenantName}</div>}
-                  {p.contractEndDate && (
-                    <div><strong>Sözleşme Bitiş:</strong> {new Date(p.contractEndDate).toLocaleDateString('tr-TR')}</div>
+                  <div className="person-info">
+                    <span className="person-label">Sahibi</span>
+                    <span className="person-name">{p.ownerName}</span>
+                  </div>
+                  {p.tenantName && (
+                    <div className="person-info">
+                      <span className="person-label">Kiracı</span>
+                      <span className="person-name">{p.tenantName}</span>
+                    </div>
                   )}
                 </div>
-                <div className="property-rent">
-                  <strong>{p.monthlyRent.toLocaleString('tr-TR')} ₺/ay</strong>
-                </div>
               </div>
-              <div className="property-card-footer">
-                <button className="btn-icon" onClick={() => handleDelete(p.id)} title="Sil">🗑️</button>
+              <div className="property-card__footer">
+                <span className="property-rent">{p.monthlyRent.toLocaleString('tr-TR')} ₺/ay</span>
+                <button 
+                  className="icon-btn icon-btn--danger" 
+                  onClick={(e) => handleDelete(e, p.id)}
+                  title="Sil"
+                >
+                  <TrashIcon />
+                </button>
               </div>
             </div>
           ))}
@@ -118,4 +179,3 @@ export const Properties = () => {
     </div>
   );
 };
-

@@ -1,23 +1,24 @@
-﻿﻿.main-layout {
+﻿.main-layout {
   display: flex;
   min-height: 100vh;
-  background-color: #f5f6fa;
+  background-color: var(--bg-primary);
 }
 
 .main-content {
   flex: 1;
-  margin-left: 250px;
+  margin-left: 260px;
   display: flex;
   flex-direction: column;
 }
 
 .content-header {
-  background-color: white;
+  background-color: var(--bg-secondary);
   padding: 1rem 2rem;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  box-shadow: var(--shadow-sm);
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .header-user {
@@ -28,12 +29,12 @@
 .user-name {
   font-weight: 700;
   font-size: 0.95rem;
-  color: #1a1a2e;
+  color: var(--text-primary);
 }
 
 .user-role {
   font-size: 0.78rem;
-  color: #6b7280;
+  color: var(--text-muted);
 }
 
 .notification-btn {
@@ -51,7 +52,8 @@
 
 .content-body {
   flex: 1;
-  padding: 2rem;
+  padding: 1.5rem;
+  overflow-y: auto;
 }
 
 @media (max-width: 768px) {
@@ -63,4 +65,3 @@
     padding: 1rem;
   }
 }
-

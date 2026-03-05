@@ -4,6 +4,7 @@ import { ProtectedRoute } from './components/ProtectedRoute';
 import { Dashboard } from './pages/Dashboard/Dashboard';
 import { Calendar } from './pages/Calendar/Calendar';
 import { Properties } from './pages/Properties/Properties';
+import { PropertyDetail } from './pages/Properties/PropertyDetail';
 import { PropertyWizard } from './pages/Properties/Wizard/PropertyWizard';
 import { Persons } from './pages/Persons/Persons';
 import { SuperAdmin } from './pages/SuperAdmin/SuperAdmin';
@@ -22,6 +23,7 @@ function App() {
           <Route path="takvim" element={<Calendar />} />
           <Route path="mulkler" element={<Properties />} />
           <Route path="mulkler/yeni" element={<PropertyWizard />} />
+          <Route path="mulkler/:id" element={<PropertyDetail />} />
           <Route path="kisiler" element={<Persons />} />
           <Route path="super-admin" element={<ProtectedRoute requiredRole="SuperAdmin"><SuperAdmin /></ProtectedRoute>} />
         </Route>

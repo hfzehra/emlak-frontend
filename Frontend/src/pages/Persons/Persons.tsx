@@ -1,9 +1,43 @@
-﻿﻿import { useEffect, useState } from 'react';
+﻿import { useEffect, useState } from 'react';
 import { apiClient } from '../../services/apiClient';
+import './Persons.css';
+
+// Icons
+const PlusIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+  </svg>
+);
+
+const EditIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+  </svg>
+);
+
+const TrashIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="3 6 5 6 21 6"/>
+    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+  </svg>
+);
+
+const SearchIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+  </svg>
+);
 
 interface Person {
-  id: string; fullName: string; phone: string; email?: string;
-  identityNumber?: string; personType: string; tenantId: string;
+  id: string;
+  fullName: string;
+  firstName?: string;
+  lastName?: string;
+  phone: string;
+  email?: string;
+  personType: string;
+  tenantId: string;
 }
 
 export const Persons = () => {
@@ -12,11 +46,12 @@ export const Persons = () => {
   const [typeFilter, setTypeFilter] = useState<'all' | '0' | '1'>('all');
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({ firstName: '', lastName: '', phone: '', email: '', identityNumber: '', personType: 0 });
+  const [editingPerson, setEditingPerson] = useState<Person | null>(null);
+  const [form, setForm] = useState({ firstName: '', lastName: '', phone: '', email: '', personType: 0 });
   const [error, setError] = useState('');
   const [formError, setFormError] = useState('');
 
-  const fetch = () => {
+  const fetchPersons = () => {
     setError('');
     const q = typeFilter === 'all' ? '' : `?personType=${typeFilter}`;
     apiClient.get<Person[]>(`/persons${q}`)
@@ -28,25 +63,63 @@ export const Persons = () => {
       .finally(() => setLoading(false));
   };
 
-  useEffect(() => { fetch(); }, [typeFilter]);
+  useEffect(() => { fetchPersons(); }, [typeFilter]);
 
-  const handleCreate = async (e: React.FormEvent) => {
+  const resetForm = () => {
+    setForm({ firstName: '', lastName: '', phone: '', email: '', personType: 0 });
+    setEditingPerson(null);
+    setShowForm(false);
+    setFormError('');
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError('');
+    
     try {
-      await apiClient.post('/persons', form);
-      setShowForm(false);
-      setForm({ firstName: '', lastName: '', phone: '', email: '', identityNumber: '', personType: 0 });
-      fetch();
+      if (editingPerson) {
+        await apiClient.put(`/persons/${editingPerson.id}`, form);
+      } else {
+        await apiClient.post('/persons', form);
+      }
+      resetForm();
+      fetchPersons();
     } catch (err: any) {
-      console.error('Kişi ekleme hatası:', err.response?.data);
+      console.error('Kişi kaydetme hatası:', err.response?.data);
       const errorData = err.response?.data;
       if (errorData?.errors && Array.isArray(errorData.errors)) {
         const msgs = errorData.errors.map((e: any) => e.message).join(', ');
         setFormError(msgs);
       } else {
-        setFormError(errorData?.detail || errorData?.title || 'Kişi eklenirken bir hata oluştu.');
+        setFormError(errorData?.detail || errorData?.title || 'Bir hata oluştu.');
       }
+    }
+  };
+
+  const handleEdit = (person: Person) => {
+    const nameParts = person.fullName.split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+    
+    setForm({
+      firstName,
+      lastName,
+      phone: person.phone,
+      email: person.email || '',
+      personType: person.personType === 'Owner' ? 0 : 1
+    });
+    setEditingPerson(person);
+    setShowForm(true);
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Bu kişiyi silmek istediğinize emin misiniz?')) return;
+    
+    try {
+      await apiClient.delete(`/persons/${id}`);
+      fetchPersons();
+    } catch (err: any) {
+      setError(err.response?.data?.detail || 'Kişi silinemedi.');
     }
   };
 
@@ -56,80 +129,162 @@ export const Persons = () => {
   );
 
   return (
-    <div style={{ maxWidth: 1200, margin: '0 auto', padding: '1rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
-        <h1 style={{ fontSize: '1.75rem', fontWeight: 700 }}>Kişiler</h1>
-        <button className="btn-add" onClick={() => setShowForm(!showForm)} style={{ background: '#6366f1', color: 'white', border: 'none', padding: '0.75rem 1.5rem', borderRadius: 8, fontWeight: 600, cursor: 'pointer' }}>
-          {showForm ? 'İptal' : '+ Yeni Kişi'}
+    <div className="persons-page">
+      <div className="page-header">
+        <div>
+          <h1>Kişiler</h1>
+          <p className="page-subtitle">Mülk sahipleri ve kiracıları yönetin</p>
+        </div>
+        <button className="btn btn-primary" onClick={() => { resetForm(); setShowForm(true); }}>
+          <PlusIcon />
+          Yeni Kişi
         </button>
       </div>
 
+      {/* Form Modal */}
       {showForm && (
-        <form onSubmit={handleCreate} style={{ background: 'white', borderRadius: 12, padding: '1.5rem', marginBottom: '1.5rem', boxShadow: '0 2px 12px rgba(0,0,0,0.07)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-          <div style={{ gridColumn: '1/-1', fontWeight: 700, fontSize: '1rem' }}>Yeni Kişi Ekle</div>
-          {formError && <div style={{ gridColumn: '1/-1', background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '0.75rem 1rem', borderRadius: 8, fontSize: '0.9rem' }}>❌ {formError}</div>}
-          {[['firstName', 'Ad *'], ['lastName', 'Soyad *'], ['phone', 'Telefon *'], ['email', 'E-posta'], ['identityNumber', 'TC Kimlik']].map(([k, l]) => (
-            <div key={k} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-              <label style={{ fontSize: '0.85rem', fontWeight: 600 }}>{l}</label>
-              <input value={(form as any)[k]} onChange={e => setForm(f => ({ ...f, [k]: e.target.value }))}
-                style={{ padding: '0.65rem', border: '1.5px solid #e5e7eb', borderRadius: 8, fontSize: '0.95rem' }} />
-            </div>
-          ))}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-            <label style={{ fontSize: '0.85rem', fontWeight: 600 }}>Tip</label>
-            <select value={form.personType} onChange={e => setForm(f => ({ ...f, personType: +e.target.value }))}
-              style={{ padding: '0.65rem', border: '1.5px solid #e5e7eb', borderRadius: 8 }}>
-              <option value={0}>Mülk Sahibi</option>
-              <option value={1}>Kiracı</option>
-            </select>
+        <div className="modal-overlay" onClick={resetForm}>
+          <div className="modal" onClick={e => e.stopPropagation()}>
+            <h2>{editingPerson ? 'Kişi Düzenle' : 'Yeni Kişi Ekle'}</h2>
+            {formError && <div className="form-error">{formError}</div>}
+            <form onSubmit={handleSubmit} className="person-form">
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Ad *</label>
+                  <input
+                    type="text"
+                    value={form.firstName}
+                    onChange={e => setForm({ ...form, firstName: e.target.value })}
+                    placeholder="Ahmet"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Soyad *</label>
+                  <input
+                    type="text"
+                    value={form.lastName}
+                    onChange={e => setForm({ ...form, lastName: e.target.value })}
+                    placeholder="Yılmaz"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Telefon *</label>
+                  <input
+                    type="tel"
+                    value={form.phone}
+                    onChange={e => setForm({ ...form, phone: e.target.value })}
+                    placeholder="0532 123 45 67"
+                    required
+                  />
+                </div>
+                <div className="form-group">
+                  <label>E-posta</label>
+                  <input
+                    type="email"
+                    value={form.email}
+                    onChange={e => setForm({ ...form, email: e.target.value })}
+                    placeholder="ornek@email.com"
+                  />
+                </div>
+              </div>
+              <div className="form-group">
+                <label>Kişi Tipi *</label>
+                <select
+                  value={form.personType}
+                  onChange={e => setForm({ ...form, personType: +e.target.value })}
+                >
+                  <option value={0}>Mülk Sahibi</option>
+                  <option value={1}>Kiracı</option>
+                </select>
+              </div>
+              <div className="form-actions">
+                <button type="button" className="btn btn-outline" onClick={resetForm}>İptal</button>
+                <button type="submit" className="btn btn-primary">
+                  {editingPerson ? 'Güncelle' : 'Kaydet'}
+                </button>
+              </div>
+            </form>
           </div>
-          <div style={{ gridColumn: '1/-1' }}>
-            <button type="submit" style={{ background: '#16a34a', color: 'white', border: 'none', padding: '0.75rem 2rem', borderRadius: 8, fontWeight: 600, cursor: 'pointer' }}>Kaydet</button>
-          </div>
-        </form>
+        </div>
       )}
 
-      <div style={{ display: 'flex', gap: '1rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
-        <input placeholder="İsim veya telefon ile ara..." value={search} onChange={e => setSearch(e.target.value)}
-          style={{ flex: 1, padding: '0.65rem 1rem', border: '1.5px solid #e5e7eb', borderRadius: 8, minWidth: 200 }} />
-        <div style={{ display: 'flex', gap: '0.5rem' }}>
+      {/* Filters */}
+      <div className="filters-bar">
+        <div className="search-box">
+          <SearchIcon />
+          <input
+            type="text"
+            placeholder="İsim veya telefon ile ara..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+          />
+        </div>
+        <div className="filter-tabs">
           {(['all', '0', '1'] as const).map(f => (
-            <button key={f} onClick={() => setTypeFilter(f)}
-              style={{ padding: '0.5rem 1.25rem', border: `1.5px solid ${typeFilter === f ? '#3b82f6' : '#e5e7eb'}`, borderRadius: 8, background: typeFilter === f ? '#eff6ff' : 'white', color: typeFilter === f ? '#1d4ed8' : '#6b7280', fontWeight: typeFilter === f ? 700 : 400, cursor: 'pointer' }}>
+            <button
+              key={f}
+              className={`filter-tab ${typeFilter === f ? 'active' : ''}`}
+              onClick={() => setTypeFilter(f)}
+            >
               {f === 'all' ? 'Tümü' : f === '0' ? 'Sahipler' : 'Kiracılar'}
             </button>
           ))}
         </div>
       </div>
 
-      {error && <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '1rem', borderRadius: 8, marginBottom: '1rem', fontSize: '0.9rem' }}>❌ {error}</div>}
+      {error && <div className="error-banner">{error}</div>}
 
-      {loading ? <div style={{ textAlign: 'center', padding: '3rem', color: '#9ca3af' }}>Yükleniyor...</div> : (
-        <div style={{ background: 'white', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.07)', overflow: 'hidden' }}>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+      {/* Table */}
+      {loading ? (
+        <div className="loading-state">
+          <div className="loading-spinner"></div>
+          <p>Yükleniyor...</p>
+        </div>
+      ) : (
+        <div className="table-wrapper">
+          <table className="data-table">
             <thead>
-              <tr style={{ background: '#f9fafb', borderBottom: '2px solid #f3f4f6' }}>
-                {['Ad Soyad', 'Telefon', 'E-posta', 'TC Kimlik', 'Tip'].map(h => (
-                  <th key={h} style={{ padding: '0.875rem 1rem', textAlign: 'left', fontSize: '0.8rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase' }}>{h}</th>
-                ))}
+              <tr>
+                <th>Ad Soyad</th>
+                <th>Telefon</th>
+                <th>E-posta</th>
+                <th>Tip</th>
+                <th>İşlemler</th>
               </tr>
             </thead>
             <tbody>
               {filtered.length === 0 ? (
-                <tr><td colSpan={5} style={{ padding: '3rem', textAlign: 'center', color: '#9ca3af' }}>Kişi bulunamadı.</td></tr>
-              ) : filtered.map(p => (
-                <tr key={p.id} style={{ borderBottom: '1px solid #f3f4f6' }}>
-                  <td style={{ padding: '0.875rem 1rem', fontWeight: 600 }}>{p.fullName}</td>
-                  <td style={{ padding: '0.875rem 1rem', color: '#374151' }}>{p.phone}</td>
-                  <td style={{ padding: '0.875rem 1rem', color: '#6b7280' }}>{p.email ?? '-'}</td>
-                  <td style={{ padding: '0.875rem 1rem', color: '#6b7280', fontFamily: 'monospace' }}>{p.identityNumber ?? '-'}</td>
-                  <td style={{ padding: '0.875rem 1rem' }}>
-                    <span style={{ padding: '0.25rem 0.75rem', borderRadius: 20, fontSize: '0.75rem', fontWeight: 700, background: p.personType === 'Owner' ? '#eff6ff' : '#f0fdf4', color: p.personType === 'Owner' ? '#1d4ed8' : '#16a34a' }}>
-                      {p.personType === 'Owner' ? 'Sahip' : 'Kiracı'}
-                    </span>
+                <tr>
+                  <td colSpan={5} className="empty-state">
+                    <p>Kişi bulunamadı.</p>
                   </td>
                 </tr>
-              ))}
+              ) : (
+                filtered.map(p => (
+                  <tr key={p.id}>
+                    <td className="name-cell">{p.fullName}</td>
+                    <td>{p.phone}</td>
+                    <td className="email-cell">{p.email || <span className="text-muted">—</span>}</td>
+                    <td>
+                      <span className={`type-badge ${p.personType === 'Owner' ? 'type-badge--owner' : 'type-badge--tenant'}`}>
+                        {p.personType === 'Owner' ? 'Sahip' : 'Kiracı'}
+                      </span>
+                    </td>
+                    <td className="actions-cell">
+                      <button className="icon-btn" onClick={() => handleEdit(p)} title="Düzenle">
+                        <EditIcon />
+                      </button>
+                      <button className="icon-btn icon-btn--danger" onClick={() => handleDelete(p.id)} title="Sil">
+                        <TrashIcon />
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              )}
             </tbody>
           </table>
         </div>
@@ -137,4 +292,3 @@ export const Persons = () => {
     </div>
   );
 };
-
