@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+﻿﻿import { useEffect, useState } from 'react';
 import { apiClient } from '../../services/apiClient';
 
 interface Person {
@@ -13,20 +13,41 @@ export const Persons = () => {
   const [search, setSearch] = useState('');
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ firstName: '', lastName: '', phone: '', email: '', identityNumber: '', personType: 0 });
+  const [error, setError] = useState('');
+  const [formError, setFormError] = useState('');
 
   const fetch = () => {
+    setError('');
     const q = typeFilter === 'all' ? '' : `?personType=${typeFilter}`;
-    apiClient.get<Person[]>(`/persons${q}`).then(r => setPersons(r.data)).catch(() => {}).finally(() => setLoading(false));
+    apiClient.get<Person[]>(`/persons${q}`)
+      .then(r => setPersons(r.data))
+      .catch(err => {
+        console.error('Kişiler yüklenemedi:', err.response?.data);
+        setError(err.response?.data?.detail || err.response?.data?.title || 'Kişiler yüklenemedi.');
+      })
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => { fetch(); }, [typeFilter]);
 
   const handleCreate = async (e: React.FormEvent) => {
     e.preventDefault();
-    await apiClient.post('/persons', form);
-    setShowForm(false);
-    setForm({ firstName: '', lastName: '', phone: '', email: '', identityNumber: '', personType: 0 });
-    fetch();
+    setFormError('');
+    try {
+      await apiClient.post('/persons', form);
+      setShowForm(false);
+      setForm({ firstName: '', lastName: '', phone: '', email: '', identityNumber: '', personType: 0 });
+      fetch();
+    } catch (err: any) {
+      console.error('Kişi ekleme hatası:', err.response?.data);
+      const errorData = err.response?.data;
+      if (errorData?.errors && Array.isArray(errorData.errors)) {
+        const msgs = errorData.errors.map((e: any) => e.message).join(', ');
+        setFormError(msgs);
+      } else {
+        setFormError(errorData?.detail || errorData?.title || 'Kişi eklenirken bir hata oluştu.');
+      }
+    }
   };
 
   const filtered = persons.filter(p =>
@@ -46,6 +67,7 @@ export const Persons = () => {
       {showForm && (
         <form onSubmit={handleCreate} style={{ background: 'white', borderRadius: 12, padding: '1.5rem', marginBottom: '1.5rem', boxShadow: '0 2px 12px rgba(0,0,0,0.07)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
           <div style={{ gridColumn: '1/-1', fontWeight: 700, fontSize: '1rem' }}>Yeni Kişi Ekle</div>
+          {formError && <div style={{ gridColumn: '1/-1', background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '0.75rem 1rem', borderRadius: 8, fontSize: '0.9rem' }}>❌ {formError}</div>}
           {[['firstName', 'Ad *'], ['lastName', 'Soyad *'], ['phone', 'Telefon *'], ['email', 'E-posta'], ['identityNumber', 'TC Kimlik']].map(([k, l]) => (
             <div key={k} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
               <label style={{ fontSize: '0.85rem', fontWeight: 600 }}>{l}</label>
@@ -79,6 +101,8 @@ export const Persons = () => {
           ))}
         </div>
       </div>
+
+      {error && <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '1rem', borderRadius: 8, marginBottom: '1rem', fontSize: '0.9rem' }}>❌ {error}</div>}
 
       {loading ? <div style={{ textAlign: 'center', padding: '3rem', color: '#9ca3af' }}>Yükleniyor...</div> : (
         <div style={{ background: 'white', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.07)', overflow: 'hidden' }}>

@@ -1,4 +1,4 @@
-﻿import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+﻿﻿import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { authApi } from '../../services/authApi';
 import type { LoginRequest, RegisterRequest, AuthResult } from '../../services/authApi';
@@ -28,8 +28,29 @@ export const login = createAsyncThunk('auth/login', async (data: LoginRequest, {
     console.log('Login başarılı:', result);
     return result;
   } catch (err: any) {
+    const status = err.response?.status;
     const data = err.response?.data;
-    console.error('Login hatası:', data);
+    console.error('Login hatası:', status, data);
+    
+    // HTTP durum koduna göre kullanıcı dostu mesajlar
+    if (status === 401) {
+      return rejectWithValue('E-posta veya şifre hatalı. Lütfen bilgilerinizi kontrol edin.');
+    }
+    if (status === 404) {
+      return rejectWithValue('Bu e-posta adresi ile kayıtlı bir hesap bulunamadı.');
+    }
+    if (status === 400) {
+      if (data?.errors && Array.isArray(data.errors)) {
+        const msgs = data.errors.map((e: any) => e.message).join(', ');
+        return rejectWithValue(msgs);
+      }
+      return rejectWithValue(data?.detail ?? 'Geçersiz giriş bilgileri.');
+    }
+    if (status >= 500) {
+      return rejectWithValue('Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.');
+    }
+    
+    // Diğer hatalar
     if (data?.errors && Array.isArray(data.errors)) {
       const msgs = data.errors.map((e: any) => e.message).join(', ');
       return rejectWithValue(msgs);
@@ -50,8 +71,25 @@ export const register = createAsyncThunk('auth/register', async (data: RegisterR
     console.log('Kayıt başarılı:', result);
     return result;
   } catch (err: any) {
+    const status = err.response?.status;
     const resData = err.response?.data;
-    console.error('Kayıt hatası:', resData);
+    console.error('Kayıt hatası:', status, resData);
+    
+    // HTTP durum koduna göre kullanıcı dostu mesajlar
+    if (status === 409) {
+      return rejectWithValue('Bu e-posta adresi zaten kayıtlı. Giriş yapmayı deneyin.');
+    }
+    if (status === 400) {
+      if (resData?.errors && Array.isArray(resData.errors)) {
+        const msgs = resData.errors.map((e: any) => e.message).join(', ');
+        return rejectWithValue(msgs);
+      }
+      return rejectWithValue(resData?.detail ?? 'Geçersiz kayıt bilgileri.');
+    }
+    if (status >= 500) {
+      return rejectWithValue('Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.');
+    }
+    
     if (resData?.errors && Array.isArray(resData.errors)) {
       const msgs = resData.errors.map((e: any) => e.message).join(', ');
       return rejectWithValue(msgs);

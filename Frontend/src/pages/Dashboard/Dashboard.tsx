@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+﻿﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../services/apiClient';
 import './Dashboard.css';
@@ -28,7 +28,18 @@ export const Dashboard = () => {
       })
       .catch(err => {
         console.error('Dashboard hatası:', err.response?.data);
-        setError(err.response?.data?.title || err.response?.data?.detail || 'Dashboard yüklenemedi');
+        const errorData = err.response?.data;
+        let errorMessage = 'Dashboard yüklenemedi.';
+        if (errorData?.detail) {
+          errorMessage = errorData.detail;
+        } else if (errorData?.title) {
+          errorMessage = errorData.title;
+        }
+        // 500 hatası için özel mesaj
+        if (err.response?.status >= 500) {
+          errorMessage = 'Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.';
+        }
+        setError(errorMessage);
       })
       .finally(() => setLoading(false));
   }, []);

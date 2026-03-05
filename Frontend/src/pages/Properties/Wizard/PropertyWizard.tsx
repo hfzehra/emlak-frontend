@@ -1,4 +1,4 @@
-﻿﻿import { useState, useEffect } from 'react';
+﻿﻿﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../../services/apiClient';
 import { getCities, getDistricts, type City, type District } from '../../../services/turkeyApi';
@@ -208,20 +208,39 @@ export const PropertyWizard = () => {
   const handleSubmit = async () => {
     setLoading(true); setError('');
     try {
-      console.log('Gönderilen veri:', data);
-      const response = await apiClient.post('/properties/wizard', data);
+      // Tarihleri ISO UTC formatına çevir
+      const submitData = {
+        ...data,
+        contractStartDate: data.contractStartDate ? new Date(data.contractStartDate).toISOString() : undefined,
+        contractEndDate: data.contractEndDate ? new Date(data.contractEndDate).toISOString() : undefined,
+      };
+      console.log('Gönderilen veri:', submitData);
+      const response = await apiClient.post('/properties/wizard', submitData);
       console.log('Başarılı:', response.data);
       navigate('/mulkler');
     } catch (e: unknown) {
-      const err = e as { response?: { data?: { title?: string; errors?: Array<{field: string; message: string}>; detail?: string } } };
+      const err = e as { response?: { status?: number; data?: { title?: string; errors?: Array<{field: string; message: string}>; detail?: string; innerDetail?: string } } };
       console.error('Wizard hatası:', err.response?.data);
       
+      const status = err.response?.status;
+      const errorData = err.response?.data;
+      
+      // 500 sunucu hatası için özel mesaj
+      if (status && status >= 500) {
+        setError('Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.');
+        return;
+      }
+      
       // Validation hatalarını göster
-      if (err.response?.data?.errors) {
-        const validationErrors = err.response.data.errors.map(e => `${e.field}: ${e.message}`).join('\n');
+      if (errorData?.errors) {
+        const validationErrors = errorData.errors.map(e => `${e.field}: ${e.message}`).join('\n');
         setError(`Doğrulama Hatası:\n${validationErrors}`);
+      } else if (errorData?.detail) {
+        setError(errorData.detail);
+      } else if (errorData?.title) {
+        setError(errorData.title);
       } else {
-        setError(err.response?.data?.detail || err.response?.data?.title || 'Bir hata oluştu.');
+        setError('Mülk kaydedilirken bir hata oluştu. Lütfen bilgilerinizi kontrol edin.');
       }
     } finally { setLoading(false); }
   };

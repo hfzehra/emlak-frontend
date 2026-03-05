@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+﻿﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../services/apiClient';
 import './Properties.css';
@@ -16,19 +16,31 @@ export const Properties = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'rented' | 'vacant'>('all');
   const [search, setSearch] = useState('');
+  const [error, setError] = useState('');
 
   const fetchProperties = () => {
+    setError('');
     const params = filter === 'all' ? '' : `?isRented=${filter === 'rented'}`;
     apiClient.get<Property[]>(`/properties${params}`)
-      .then(r => setProperties(r.data)).catch(() => {}).finally(() => setLoading(false));
+      .then(r => setProperties(r.data))
+      .catch(err => {
+        console.error('Mülkler yüklenemedi:', err.response?.data);
+        setError(err.response?.data?.detail || err.response?.data?.title || 'Mülkler yüklenemedi.');
+      })
+      .finally(() => setLoading(false));
   };
 
   useEffect(() => { fetchProperties(); }, [filter]);
 
   const handleDelete = async (id: string) => {
     if (!confirm('Bu mülkü silmek istediğinize emin misiniz?')) return;
-    await apiClient.delete(`/properties/${id}`);
-    fetchProperties();
+    try {
+      await apiClient.delete(`/properties/${id}`);
+      fetchProperties();
+    } catch (err: any) {
+      console.error('Mülk silme hatası:', err.response?.data);
+      setError(err.response?.data?.detail || err.response?.data?.title || 'Mülk silinemedi.');
+    }
   };
 
   const filtered = properties.filter(p =>
@@ -59,6 +71,8 @@ export const Properties = () => {
           ))}
         </div>
       </div>
+
+      {error && <div className="error-message" style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#dc2626', padding: '1rem', borderRadius: 8, marginBottom: '1rem', fontSize: '0.9rem' }}>❌ {error}</div>}
 
       {loading ? <div className="loading">Yükleniyor...</div> : (
         <div className="properties-grid">
