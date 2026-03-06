@@ -298,7 +298,7 @@ export const PropertyDetail = () => {
               </div>
               
               <div className="form-hint-box">
-                <small>💡 Komisyon otomatik hesaplanır: Kira × %20</small>
+                <small>💡 Komisyon otomatik hesaplanır: Kira + %20 (Kira × 1.20)</small>
               </div>
 
               <div className="form-group checkbox-group">
