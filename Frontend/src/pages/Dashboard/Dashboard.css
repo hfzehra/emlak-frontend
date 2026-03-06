@@ -1,4 +1,4 @@
-﻿/* Dashboard Styles - Lapis Velvet Evening Theme */
+﻿﻿/* Dashboard Styles - Lapis Velvet Evening Theme */
 
 .dashboard {
   max-width: 1400px;
@@ -371,15 +371,147 @@
   .dashboard {
     padding: var(--spacing-md);
   }
-  
+
+  .dashboard-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .dashboard-subtitle {
+    font-size: 0.875rem;
+  }
+
+  .stats-grid {
+    gap: var(--spacing-md);
+  }
+
+  .stat-card {
+    padding: var(--spacing-md);
+  }
+
+  .stat-card__icon {
+    width: 48px;
+    height: 48px;
+  }
+
+  .stat-card__icon svg {
+    width: 24px;
+    height: 24px;
+  }
+
+  .stat-card__value {
+    font-size: 1.25rem;
+  }
+
+  .stat-card__label {
+    font-size: 0.8rem;
+  }
+
+  .section-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .section-header h2 {
+    font-size: 1.1rem;
+  }
+
+  .btn-view-all {
+    padding: 0.4rem 0.875rem;
+    font-size: 0.8rem;
+  }
+
+  .dashboard-section {
+    padding: var(--spacing-md);
+  }
+
+  .properties-table-wrapper {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .properties-table {
+    min-width: 600px;
+  }
+
   .properties-table th,
   .properties-table td {
     padding: var(--spacing-sm);
     font-size: 0.85rem;
   }
-  
-  .stat-card__value {
-    font-size: 1.25rem;
+
+  .property-number {
+    font-size: 0.75rem;
+    padding: 0.2rem 0.4rem;
+  }
+
+  .address-main {
+    font-size: 0.875rem;
+  }
+
+  .address-detail {
+    font-size: 0.75rem;
+  }
+
+  .rent-amount {
+    font-size: 0.875rem;
+  }
+
+  .status-badge {
+    padding: 0.25rem 0.65rem;
+    font-size: 0.7rem;
   }
 }
 
+@media (max-width: 480px) {
+  .dashboard {
+    padding: var(--spacing-sm);
+  }
+
+  .dashboard-header {
+    margin-bottom: var(--spacing-lg);
+  }
+
+  .dashboard-header h1 {
+    font-size: 1.35rem;
+  }
+
+  .stats-grid {
+    gap: var(--spacing-sm);
+  }
+
+  .stat-card {
+    padding: var(--spacing-sm);
+  }
+
+  .stat-card__icon {
+    width: 44px;
+    height: 44px;
+  }
+
+  .stat-card__icon svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  .stat-card__value {
+    font-size: 1.1rem;
+  }
+
+  .dashboard-section {
+    padding: var(--spacing-sm);
+    border-radius: var(--radius-md);
+  }
+
+  .section-header h2 {
+    font-size: 1rem;
+  }
+
+  .properties-table {
+    min-width: 550px;
+  }
+
+  .btn {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.85rem;
+  }
+}

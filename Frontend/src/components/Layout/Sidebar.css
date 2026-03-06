@@ -10,6 +10,45 @@
   top: 0;
   z-index: 1000;
   box-shadow: var(--shadow-lg);
+  transition: transform 0.3s ease-in-out;
+}
+
+/* Burger Menü Butonu */
+.burger-menu {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1100;
+  width: 48px;
+  height: 48px;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+  border: none;
+  border-radius: var(--radius-md);
+  color: white;
+  cursor: pointer;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-md);
+  transition: all var(--transition-fast);
+}
+
+.burger-menu:hover {
+  transform: scale(1.05);
+  box-shadow: var(--shadow-lg);
+}
+
+.burger-menu:active {
+  transform: scale(0.95);
+}
+
+/* Overlay */
+.sidebar-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  display: none;
 }
 
 .sidebar-header {
@@ -115,22 +154,35 @@
   height: 22px;
 }
 
-@media (max-width: 768px) {
+/* Tablet ve Mobil için Responsive */
+@media (max-width: 1024px) {
+  .burger-menu {
+    display: flex;
+  }
+
   .sidebar {
-    width: 70px;
+    transform: translateX(-100%);
   }
-  
-  .sidebar-logo span,
-  .sidebar-label {
-    display: none;
+
+  .sidebar--open {
+    transform: translateX(0);
   }
-  
-  .sidebar-link {
-    justify-content: center;
-    padding: 1rem;
+
+  .sidebar-overlay {
+    display: block;
   }
-  
-  .logout-btn {
-    justify-content: center;
+}
+
+/* Küçük Mobil için */
+@media (max-width: 480px) {
+  .sidebar {
+    width: 280px;
+  }
+
+  .burger-menu {
+    top: 0.75rem;
+    left: 0.75rem;
+    width: 44px;
+    height: 44px;
   }
 }

@@ -1,4 +1,5 @@
 import { Link, useLocation } from 'react-router-dom';
+import { useState } from 'react';
 import './Sidebar.css';
 
 // SVG Icons
@@ -50,6 +51,21 @@ const LogoutIcon = () => (
   </svg>
 );
 
+const MenuIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="3" y1="12" x2="21" y2="12"/>
+    <line x1="3" y1="6" x2="21" y2="6"/>
+    <line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <line x1="18" y1="6" x2="6" y2="18"/>
+    <line x1="6" y1="6" x2="18" y2="18"/>
+  </svg>
+);
+
 const getIcon = (label: string) => {
   switch (label) {
     case 'Anasayfa': return <HomeIcon />;
@@ -81,33 +97,53 @@ const DEFAULT_MENU: MenuItem[] = [
 
 export const Sidebar = ({ onLogout, menuItems = DEFAULT_MENU }: SidebarProps) => {
   const location = useLocation();
+  const [isOpen, setIsOpen] = useState(false);
+
+  const handleLinkClick = () => {
+    // Mobilde menü linkine tıklayınca sidebar'ı kapat
+    if (window.innerWidth <= 1024) {
+      setIsOpen(false);
+    }
+  };
 
   return (
-    <div className="sidebar">
-      <div className="sidebar-header">
-        <div className="sidebar-logo">
-          <BuildingIcon />
-          <span>EMLAK</span>
+    <>
+      {/* Burger Menü Butonu */}
+      <button className="burger-menu" onClick={() => setIsOpen(!isOpen)}>
+        {isOpen ? <CloseIcon /> : <MenuIcon />}
+      </button>
+
+      {/* Overlay (mobilde açıkken arkaplan) */}
+      {isOpen && <div className="sidebar-overlay" onClick={() => setIsOpen(false)} />}
+
+      {/* Sidebar */}
+      <div className={`sidebar ${isOpen ? 'sidebar--open' : ''}`}>
+        <div className="sidebar-header">
+          <div className="sidebar-logo">
+            <BuildingIcon />
+            <span>EMLAK</span>
+          </div>
+        </div>
+        <nav className="sidebar-nav">
+          {menuItems.map((item) => (
+            <Link
+              key={item.path}
+              to={item.path}
+              className={`sidebar-link ${location.pathname === item.path ? 'active' : ''}`}
+              onClick={handleLinkClick}
+            >
+              {getIcon(item.label)}
+              <span className="sidebar-label">{item.label}</span>
+            </Link>
+          ))}
+        </nav>
+        <div className="sidebar-footer">
+          <button className="logout-btn" onClick={onLogout}>
+            <LogoutIcon />
+            <span className="sidebar-label">Çıkış Yap</span>
+          </button>
         </div>
       </div>
-      <nav className="sidebar-nav">
-        {menuItems.map((item) => (
-          <Link
-            key={item.path}
-            to={item.path}
-            className={`sidebar-link ${location.pathname === item.path ? 'active' : ''}`}
-          >
-            {getIcon(item.label)}
-            <span className="sidebar-label">{item.label}</span>
-          </Link>
-        ))}
-      </nav>
-      <div className="sidebar-footer">
-        <button className="logout-btn" onClick={onLogout}>
-          <LogoutIcon />
-          <span className="sidebar-label">Çıkış Yap</span>
-        </button>
-      </div>
-    </div>
+    </>
   );
 };

@@ -1,4 +1,4 @@
-﻿.main-layout {
+﻿﻿.main-layout {
   display: flex;
   min-height: 100vh;
   background-color: var(--bg-primary);
@@ -9,6 +9,7 @@
   margin-left: 260px;
   display: flex;
   flex-direction: column;
+  transition: margin-left 0.3s ease-in-out;
 }
 
 .content-header {
@@ -19,6 +20,7 @@
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid var(--border-light);
+  gap: 1rem;
 }
 
 .header-user {
@@ -56,12 +58,52 @@
   overflow-y: auto;
 }
 
-@media (max-width: 768px) {
+/* Tablet ve Mobil için */
+@media (max-width: 1024px) {
   .main-content {
-    margin-left: 70px;
+    margin-left: 0;
   }
 
+  .content-header {
+    padding: 1rem 1.5rem;
+    padding-left: 5.5rem; /* Burger menü için daha fazla boşluk */
+    gap: 1rem;
+  }
+  
   .content-body {
     padding: 1rem;
   }
 }
+
+@media (max-width: 768px) {
+  .content-header {
+    padding: 0.875rem 1rem;
+    padding-left: 5rem; /* Daha fazla boşluk */
+    gap: 0.875rem;
+  }
+
+  .user-name {
+    font-size: 0.875rem;
+  }
+
+  .user-role {
+    font-size: 0.7rem;
+  }
+
+  .content-body {
+    padding: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .content-header {
+    padding: 0.75rem;
+    padding-left: 4.5rem; /* Daha fazla boşluk */
+    gap: 0.75rem;
+  }
+
+  .header-user {
+    font-size: 0.8rem;
+  }
+}
+

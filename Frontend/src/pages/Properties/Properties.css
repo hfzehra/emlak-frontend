@@ -334,12 +334,181 @@
 }
 
 /* Responsive */
+@media (max-width: 1024px) {
+  .properties-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 @media (max-width: 768px) {
   .properties-page {
     padding: var(--spacing-md);
   }
-  
+
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .page-subtitle {
+    font-size: 0.875rem;
+  }
+
+  .filters-bar {
+    flex-direction: column;
+  }
+
+  .search-box {
+    min-width: 100%;
+  }
+
+  .filter-tabs {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .filter-tab {
+    flex: 1;
+    padding: 0.65rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
   .properties-grid {
     grid-template-columns: 1fr;
+    gap: var(--spacing-md);
+  }
+
+  .property-card__header,
+  .property-card__body,
+  .property-card__footer {
+    padding: var(--spacing-sm);
+  }
+
+  .property-location {
+    font-size: 1rem;
+  }
+
+  .property-address {
+    font-size: 0.85rem;
+  }
+
+  .property-meta {
+    font-size: 0.8rem;
+    gap: var(--spacing-sm);
+  }
+
+  .property-rent {
+    font-size: 1rem;
+  }
+
+  .btn {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.85rem;
+  }
+
+  .empty-state-card {
+    padding: var(--spacing-xl);
+  }
+
+  .empty-state-card h3 {
+    font-size: 1.1rem;
+  }
+
+  .empty-state-card p {
+    font-size: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .properties-page {
+    padding: var(--spacing-sm);
+  }
+
+  .page-header {
+    gap: var(--spacing-sm);
+  }
+
+  .page-header h1 {
+    font-size: 1.35rem;
+  }
+
+  .btn {
+    padding: 0.6rem 1rem;
+    font-size: 0.8rem;
+    gap: 0.35rem;
+  }
+
+  .btn svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .search-box input {
+    padding: 0.65rem 1rem 0.65rem 2.5rem;
+    font-size: 0.875rem;
+  }
+
+  .filter-tab {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.8rem;
+  }
+
+  .property-card {
+    border-radius: var(--radius-md);
+  }
+
+  .property-number {
+    font-size: 0.75rem;
+  }
+
+  .status-badge {
+    padding: 0.25rem 0.65rem;
+    font-size: 0.7rem;
+  }
+
+  .property-location {
+    font-size: 0.95rem;
+  }
+
+  .property-address {
+    font-size: 0.8rem;
+  }
+
+  .property-meta {
+    font-size: 0.75rem;
+  }
+
+  .person-name {
+    font-size: 0.85rem;
+  }
+
+  .person-label {
+    font-size: 0.75rem;
+  }
+
+  .property-rent {
+    font-size: 0.95rem;
+  }
+
+  .icon-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .icon-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .empty-state-card {
+    padding: var(--spacing-lg);
+  }
+
+  .empty-state-card svg {
+    width: 48px;
+    height: 48px;
+  }
+
+  .empty-state-card h3 {
+    font-size: 1rem;
   }
 }
