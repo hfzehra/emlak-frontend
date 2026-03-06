@@ -262,32 +262,97 @@ export const PropertyDetail = () => {
           <div className="edit-modal" onClick={e => e.stopPropagation()}>
             <h2>Mülk Düzenle</h2>
             <div className="edit-form">
-              <div className="form-group">
-                <label>Aylık Kira (₺)</label>
-                <input
-                  type="number"
-                  value={editForm.monthlyRent || ''}
-                  onChange={e => setEditForm({ ...editForm, monthlyRent: +e.target.value })}
-                />
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Kısa Adres</label>
+                  <input
+                    type="text"
+                    value={editForm.shortAddress || ''}
+                    onChange={e => setEditForm({ ...editForm, shortAddress: e.target.value })}
+                    placeholder="Sokak, Bina No, vb."
+                  />
+                </div>
               </div>
-              <div className="form-group">
-                <label>Kira Vadesi (Ayın Kaçı)</label>
-                <input
-                  type="number"
-                  min="1"
-                  max="28"
-                  value={editForm.rentDueDay || ''}
-                  onChange={e => setEditForm({ ...editForm, rentDueDay: +e.target.value })}
-                />
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Aylık Kira (₺)</label>
+                  <input
+                    type="number"
+                    value={editForm.monthlyRent || ''}
+                    onChange={e => setEditForm({ ...editForm, monthlyRent: +e.target.value })}
+                    placeholder="5000"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Kira Vadesi (Ayın Kaçı)</label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="28"
+                    value={editForm.rentDueDay || ''}
+                    onChange={e => setEditForm({ ...editForm, rentDueDay: +e.target.value })}
+                    placeholder="5"
+                  />
+                </div>
               </div>
-              <div className="form-group">
-                <label>Kısa Adres</label>
-                <input
-                  type="text"
-                  value={editForm.shortAddress || ''}
-                  onChange={e => setEditForm({ ...editForm, shortAddress: e.target.value })}
-                />
+
+              <div className="form-row">
+                <div className="form-group">
+                  <label>Komisyon (₺)</label>
+                  <input
+                    type="number"
+                    value={editForm.commission || ''}
+                    onChange={e => setEditForm({ ...editForm, commission: +e.target.value })}
+                    placeholder="500"
+                  />
+                </div>
+                <div className="form-group">
+                  <label>Depozito (₺)</label>
+                  <input
+                    type="number"
+                    value={editForm.deposit || ''}
+                    onChange={e => setEditForm({ ...editForm, deposit: +e.target.value })}
+                    placeholder="5000"
+                  />
+                </div>
               </div>
+
+              <div className="form-group checkbox-group">
+                <label className="checkbox-label">
+                  <input
+                    type="checkbox"
+                    checked={editForm.isRented || false}
+                    onChange={e => setEditForm({ ...editForm, isRented: e.target.checked })}
+                  />
+                  <span>Kirada</span>
+                </label>
+                <small className="form-hint">Mülk şu anda kirada ise işaretleyin</small>
+              </div>
+
+              {editForm.isRented && (
+                <>
+                  <div className="form-row">
+                    <div className="form-group">
+                      <label>Sözleşme Başlangıç</label>
+                      <input
+                        type="date"
+                        value={editForm.contractStartDate?.split('T')[0] || ''}
+                        onChange={e => setEditForm({ ...editForm, contractStartDate: e.target.value })}
+                      />
+                    </div>
+                    <div className="form-group">
+                      <label>Sözleşme Bitiş</label>
+                      <input
+                        type="date"
+                        value={editForm.contractEndDate?.split('T')[0] || ''}
+                        onChange={e => setEditForm({ ...editForm, contractEndDate: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+
               <div className="form-actions">
                 <button className="btn btn-outline" onClick={() => setIsEditing(false)}>
                   İptal

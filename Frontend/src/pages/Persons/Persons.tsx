@@ -76,11 +76,19 @@ export const Persons = () => {
     e.preventDefault();
     setFormError('');
     
+    // Telefon formatı düzenle (sadece rakamlar)
+    const cleanPhone = form.phone.replace(/\D/g, '');
+    if (cleanPhone.length < 10) {
+      setFormError('Telefon numarası en az 10 haneli olmalıdır.');
+      return;
+    }
+    
     try {
+      const submitData = { ...form, phone: cleanPhone };
       if (editingPerson) {
-        await apiClient.put(`/persons/${editingPerson.id}`, form);
+        await apiClient.put(`/persons/${editingPerson.id}`, submitData);
       } else {
-        await apiClient.post('/persons', form);
+        await apiClient.post('/persons', submitData);
       }
       resetForm();
       fetchPersons();
@@ -94,6 +102,17 @@ export const Persons = () => {
         setFormError(errorData?.detail || errorData?.title || 'Bir hata oluştu.');
       }
     }
+  };
+
+  const formatPhoneInput = (value: string) => {
+    // Sadece rakamları al
+    const cleaned = value.replace(/\D/g, '');
+    
+    // Formatla: 0532 123 45 67
+    if (cleaned.length <= 4) return cleaned;
+    if (cleaned.length <= 7) return `${cleaned.slice(0, 4)} ${cleaned.slice(4)}`;
+    if (cleaned.length <= 9) return `${cleaned.slice(0, 4)} ${cleaned.slice(4, 7)} ${cleaned.slice(7)}`;
+    return `${cleaned.slice(0, 4)} ${cleaned.slice(4, 7)} ${cleaned.slice(7, 9)} ${cleaned.slice(9, 11)}`;
   };
 
   const handleEdit = (person: Person) => {
@@ -175,9 +194,10 @@ export const Persons = () => {
                   <label>Telefon *</label>
                   <input
                     type="tel"
-                    value={form.phone}
+                    value={formatPhoneInput(form.phone)}
                     onChange={e => setForm({ ...form, phone: e.target.value })}
                     placeholder="0532 123 45 67"
+                    maxLength={15}
                     required
                   />
                 </div>

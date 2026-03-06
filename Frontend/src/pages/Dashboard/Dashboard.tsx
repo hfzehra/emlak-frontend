@@ -42,6 +42,7 @@ const ClockIcon = () => (
 interface DashboardStats {
   totalProperties: number; rentedProperties: number; vacantProperties: number;
   paidThisMonth: number; unpaidThisMonth: number; totalExpectedThisMonth: number;
+  totalCommissionThisMonth: number;
   recentProperties: RecentProperty[];
 }
 interface RecentProperty {
@@ -108,14 +109,21 @@ export const Dashboard = () => {
     { 
       key: 'paid', 
       icon: <CheckCircleIcon />, 
-      label: 'Tahsil Edilen', 
+      label: 'Tahsil Edilen Kira', 
       value: `${(stats?.paidThisMonth ?? 0).toLocaleString('tr-TR')} ₺`, 
       type: 'success' 
     },
     { 
+      key: 'commission', 
+      icon: <ClockIcon />, 
+      label: 'Komisyon Geliri', 
+      value: `${(stats?.totalCommissionThisMonth ?? 0).toLocaleString('tr-TR')} ₺`, 
+      type: 'warning' 
+    },
+    { 
       key: 'pending', 
       icon: <ClockIcon />, 
-      label: 'Bekleyen', 
+      label: 'Bekleyen Kira', 
       value: `${(stats?.unpaidThisMonth ?? 0).toLocaleString('tr-TR')} ₺`, 
       type: 'warning' 
     },

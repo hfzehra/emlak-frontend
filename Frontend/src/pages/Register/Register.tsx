@@ -1,4 +1,4 @@
-﻿import { useForm } from 'react-hook-form';
+﻿﻿import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { register as registerAction } from '../../features/auth/authSlice';
@@ -65,8 +65,22 @@ export const Register = () => {
           </div>
           <div className="form-group">
             <label>Şifre</label>
-            <input type="password" placeholder="En az 6 karakter" {...register('password', { required: 'Zorunlu', minLength: { value: 6, message: 'En az 6 karakter' } })} />
+            <input 
+              type="password" 
+              placeholder="En az 6 karakter, büyük/küçük harf ve rakam" 
+              {...register('password', { 
+                required: 'Şifre zorunludur',
+                minLength: { value: 6, message: 'En az 6 karakter olmalıdır' },
+                pattern: {
+                  value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
+                  message: 'Büyük harf, küçük harf ve rakam içermelidir'
+                }
+              })} 
+            />
             {errors.password && <span className="field-error">{errors.password.message}</span>}
+            <small style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>
+              Güvenli bir şifre için: En az 6 karakter, büyük harf, küçük harf ve rakam kullanın
+            </small>
           </div>
           <button type="submit" className="btn-primary" disabled={loading}>
             {loading ? 'Kaydediliyor...' : 'Şirket Oluştur'}

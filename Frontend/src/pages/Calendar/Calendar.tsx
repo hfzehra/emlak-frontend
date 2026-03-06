@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+﻿﻿import { useState, useEffect } from 'react';
 import ReactCalendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
 import { apiClient } from '../../services/apiClient';
@@ -12,9 +12,9 @@ interface CalendarEvent {
 }
 
 const typeColor: Record<string, string> = {
+  ContractStart: '#10b981',
   ContractEnd: '#f59e0b',
   RentDue: '#3b82f6',
-  RentOverdue: '#ef4444',
   RentPaid: '#16a34a',
 };
 
@@ -45,7 +45,7 @@ export const Calendar = () => {
       <div className="tile-content">
         {dayEvents.slice(0, 2).map((e, i) => (
           <div key={i} className="tenant-badge" style={{ background: typeColor[e.type] ?? '#6366f1' }} title={e.description}>
-            {e.type === 'ContractEnd' ? '📋' : e.type === 'RentOverdue' ? '🔴' : e.type === 'RentPaid' ? '✅' : '💰'} {e.description.substring(0, 18)}
+            {e.type === 'ContractStart' ? '🟢' : e.type === 'ContractEnd' ? '📋' : e.type === 'RentPaid' ? '✅' : '💰'} {e.description.substring(0, 18)}
           </div>
         ))}
         {dayEvents.length > 2 && <div className="tenant-badge" style={{ background: '#6b7280' }}>+{dayEvents.length - 2}</div>}
@@ -67,13 +67,13 @@ export const Calendar = () => {
         <h1 className="page-title">Takvim</h1>
       </div>
       <div className="calendar-info">
-        <p className="info-text">📋 Sözleşme bitiş tarihleri, kira vadeleri ve gecikmiş ödemeler</p>
+        <p className="info-text">📋 Sözleşme başlangıç/bitiş tarihleri ve kira vadeleri</p>
       </div>
       <div className="calendar-legend" style={{ marginBottom: '1rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
         {Object.entries(typeColor).map(([type, color]) => (
           <span key={type} style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.8rem' }}>
             <span style={{ width: 12, height: 12, borderRadius: 3, background: color, display: 'inline-block' }} />
-            {type === 'ContractEnd' ? 'Sözleşme Bitiş' : type === 'RentDue' ? 'Kira Vadesi' : type === 'RentOverdue' ? 'Gecikmiş' : 'Ödendi'}
+            {type === 'ContractStart' ? 'Sözleşme Başlangıç' : type === 'ContractEnd' ? 'Sözleşme Bitiş' : type === 'RentDue' ? 'Kira Vadesi' : 'Ödendi'}
           </span>
         ))}
       </div>
