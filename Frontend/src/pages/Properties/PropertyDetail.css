@@ -1,4 +1,4 @@
-﻿/* Property Detail Styles */
+﻿﻿/* Property Detail Styles */
 
 .property-detail {
   max-width: 1000px;
@@ -313,6 +313,20 @@
   font-size: 0.75rem;
   color: var(--text-muted);
   margin-top: 0.25rem;
+}
+
+.form-hint-box {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: #e8f4fd;
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.form-hint-box small {
+  font-size: 0.85rem;
+  color: var(--color-accent-dark);
+  font-weight: 500;
 }
 
 .checkbox-group {

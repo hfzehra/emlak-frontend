@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+﻿﻿import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { apiClient } from '../../services/apiClient';
 import './PropertyDetail.css';
@@ -296,17 +296,9 @@ export const PropertyDetail = () => {
                   />
                 </div>
               </div>
-
-              <div className="form-row">
-                <div className="form-group">
-                  <label>Komisyon (₺)</label>
-                  <input
-                    type="number"
-                    value={editForm.commission || ''}
-                    onChange={e => setEditForm({ ...editForm, commission: +e.target.value })}
-                    placeholder="500"
-                  />
-                </div>
+              
+              <div className="form-hint-box">
+                <small>💡 Komisyon otomatik hesaplanır: Kira × %20</small>
               </div>
 
               <div className="form-group checkbox-group">
