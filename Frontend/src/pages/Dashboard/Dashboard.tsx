@@ -32,13 +32,6 @@ const CheckCircleIcon = () => (
   </svg>
 );
 
-const ClockIcon = () => (
-  <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10"/>
-    <polyline points="12 6 12 12 16 14"/>
-  </svg>
-);
-
 interface DashboardStats {
   totalProperties: number; rentedProperties: number; vacantProperties: number;
   paidThisMonth: number; unpaidThisMonth: number; totalExpectedThisMonth: number;
