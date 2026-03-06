@@ -72,24 +72,12 @@
 /* Stats Grid */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: var(--spacing-lg);
   margin-bottom: var(--spacing-xl);
 }
 
-@media (max-width: 1200px) {
-  .stats-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
 @media (max-width: 768px) {
-  .stats-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-@media (max-width: 480px) {
   .stats-grid {
     grid-template-columns: 1fr;
   }
@@ -468,6 +456,18 @@
     padding: 0.25rem 0.65rem;
     font-size: 0.7rem;
   }
+
+  .chart-container {
+    gap: var(--spacing-sm);
+  }
+
+  .chart-value {
+    font-size: 0.7rem;
+  }
+
+  .chart-label {
+    font-size: 0.75rem;
+  }
 }
 
 @media (max-width: 480px) {
@@ -522,4 +522,85 @@
     padding: 0.65rem 1.25rem;
     font-size: 0.85rem;
   }
+
+  .chart-bar-wrapper {
+    min-width: 50px;
+  }
+
+  .chart-value {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.25rem;
+  }
+
+  .chart-label {
+    font-size: 0.7rem;
+  }
+}
+
+/* Aylık Gelir Grafiği */
+.chart-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-around;
+  gap: var(--spacing-md);
+  height: 250px;
+  padding: var(--spacing-lg) var(--spacing-md);
+  background: var(--bg-tertiary);
+  border-radius: var(--radius-md);
+}
+
+.chart-bar-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 1;
+  min-width: 60px;
+}
+
+.chart-bar-container {
+  width: 100%;
+  height: 180px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  position: relative;
+}
+
+.chart-bar {
+  width: 60%;
+  max-width: 60px;
+  background: linear-gradient(180deg, var(--color-primary), var(--color-secondary));
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  transition: all var(--transition-base);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: var(--spacing-xs);
+  position: relative;
+  box-shadow: var(--shadow-sm);
+  min-height: 20px;
+}
+
+.chart-bar:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-md);
+  filter: brightness(1.1);
+}
+
+.chart-value {
+  color: white;
+  font-size: 0.75rem;
+  font-weight: 600;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+  white-space: nowrap;
+  padding: var(--spacing-xs);
+}
+
+.chart-label {
+  margin-top: var(--spacing-sm);
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-align: center;
 }

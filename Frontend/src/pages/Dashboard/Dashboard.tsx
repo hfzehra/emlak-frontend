@@ -43,8 +43,14 @@ interface DashboardStats {
   totalProperties: number; rentedProperties: number; vacantProperties: number;
   paidThisMonth: number; unpaidThisMonth: number; totalExpectedThisMonth: number;
   totalCommissionThisMonth: number;
+  monthlyCommissions: MonthlyCommission[];
   recentProperties: RecentProperty[];
 }
+
+interface MonthlyCommission {
+  year: number; month: number; monthName: string; totalCommission: number;
+}
+
 interface RecentProperty {
   id: string; propertyNumber: string; shortAddress: string;
   city: string; district: string; isRented: boolean;
@@ -97,7 +103,7 @@ export const Dashboard = () => {
       icon: <HomeIcon />, 
       label: 'Kirada', 
       value: stats?.rentedProperties ?? 0, 
-      type: 'secondary' 
+      type: 'success' 
     },
     { 
       key: 'vacant', 
@@ -107,24 +113,10 @@ export const Dashboard = () => {
       type: 'accent' 
     },
     { 
-      key: 'paid', 
-      icon: <CheckCircleIcon />, 
-      label: 'Tahsil Edilen Kira', 
-      value: `${(stats?.paidThisMonth ?? 0).toLocaleString('tr-TR')} ₺`, 
-      type: 'success' 
-    },
-    { 
       key: 'commission', 
-      icon: <ClockIcon />, 
-      label: 'Komisyon Geliri', 
+      icon: <CheckCircleIcon />, 
+      label: 'Aylık Geliriniz', 
       value: `${(stats?.totalCommissionThisMonth ?? 0).toLocaleString('tr-TR')} ₺`, 
-      type: 'warning' 
-    },
-    { 
-      key: 'pending', 
-      icon: <ClockIcon />, 
-      label: 'Bekleyen Kira', 
-      value: `${(stats?.unpaidThisMonth ?? 0).toLocaleString('tr-TR')} ₺`, 
       type: 'warning' 
     },
   ];
@@ -149,6 +141,36 @@ export const Dashboard = () => {
           </div>
         ))}
       </div>
+
+      {/* Aylık Gelir Grafiği */}
+      {stats?.monthlyCommissions && stats.monthlyCommissions.length > 0 && (
+        <div className="dashboard-section" style={{ marginBottom: 'var(--spacing-xl)' }}>
+          <div className="section-header">
+            <h2>Son 6 Ayın Geliriniz</h2>
+          </div>
+          <div className="chart-container">
+            {stats.monthlyCommissions.map((m, i) => {
+              const maxValue = Math.max(...stats.monthlyCommissions.map(x => x.totalCommission));
+              const heightPercent = maxValue > 0 ? (m.totalCommission / maxValue) * 100 : 0;
+              
+              return (
+                <div key={i} className="chart-bar-wrapper">
+                  <div className="chart-bar-container">
+                    <div 
+                      className="chart-bar" 
+                      style={{ height: `${heightPercent}%` }}
+                      title={`${m.totalCommission.toLocaleString('tr-TR')} ₺`}
+                    >
+                      <span className="chart-value">{m.totalCommission.toLocaleString('tr-TR')} ₺</span>
+                    </div>
+                  </div>
+                  <span className="chart-label">{m.monthName}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
 
       <div className="dashboard-section">
         <div className="section-header">

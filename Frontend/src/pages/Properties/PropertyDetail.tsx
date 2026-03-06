@@ -307,15 +307,6 @@ export const PropertyDetail = () => {
                     placeholder="500"
                   />
                 </div>
-                <div className="form-group">
-                  <label>Depozito (₺)</label>
-                  <input
-                    type="number"
-                    value={editForm.deposit || ''}
-                    onChange={e => setEditForm({ ...editForm, deposit: +e.target.value })}
-                    placeholder="5000"
-                  />
-                </div>
               </div>
 
               <div className="form-group checkbox-group">
