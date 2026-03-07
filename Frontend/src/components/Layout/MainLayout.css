@@ -1,4 +1,10 @@
-﻿﻿.main-layout {
+﻿﻿/* =========================================================
+   MainLayout – Mobile First
+   Breakpoints: md ≥ 768px (48rem) | lg ≥ 1024px (64rem)
+   ========================================================= */
+
+/* Base – mobile */
+.main-layout {
   display: flex;
   min-height: 100vh;
   background-color: var(--bg-primary);
@@ -6,37 +12,48 @@
 
 .main-content {
   flex: 1;
-  margin-left: 260px;
+  min-width: 0; /* critical: prevents flex children from overflowing */
   display: flex;
   flex-direction: column;
-  transition: margin-left 0.3s ease-in-out;
 }
 
+/* Header: left padding leaves room for burger button */
 .content-header {
   background-color: var(--bg-secondary);
-  padding: 1rem 2rem;
+  padding: 0.75rem 1rem 0.75rem 4.5rem;
   box-shadow: var(--shadow-sm);
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid var(--border-light);
-  gap: 1rem;
+  gap: 0.75rem;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 
 .header-user {
   display: flex;
   flex-direction: column;
+  min-width: 0;
+  flex: 1;
 }
 
 .user-name {
   font-weight: 700;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .user-role {
-  font-size: 0.78rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .notification-btn {
@@ -46,6 +63,7 @@
   cursor: pointer;
   padding: 0.5rem;
   transition: transform 0.2s;
+  flex-shrink: 0;
 }
 
 .notification-btn:hover {
@@ -54,56 +72,53 @@
 
 .content-body {
   flex: 1;
-  padding: 1.5rem;
+  padding: 0.75rem;
   overflow-y: auto;
+  overflow-x: hidden;
+  min-width: 0;
 }
 
-/* Tablet ve Mobil için */
-@media (max-width: 1024px) {
-  .main-content {
-    margin-left: 0;
-  }
-
+/* md ≥ 768px */
+@media (min-width: 48rem) {
   .content-header {
-    padding: 1rem 1.5rem;
-    padding-left: 5.5rem; /* Burger menü için daha fazla boşluk */
+    padding: 1rem 1.5rem 1rem 5.5rem;
     gap: 1rem;
   }
-  
+
+  .user-name {
+    font-size: 0.9rem;
+  }
+
+  .user-role {
+    font-size: 0.75rem;
+  }
+
   .content-body {
     padding: 1rem;
   }
 }
 
-@media (max-width: 768px) {
+/* lg ≥ 1024px – sidebar is always visible */
+@media (min-width: 64rem) {
+  .main-content {
+    margin-left: 16.25rem; /* 260px */
+    transition: margin-left 0.3s ease-in-out;
+  }
+
   .content-header {
-    padding: 0.875rem 1rem;
-    padding-left: 5rem; /* Daha fazla boşluk */
-    gap: 0.875rem;
+    padding: 1rem 2rem;
   }
 
   .user-name {
-    font-size: 0.875rem;
+    font-size: 0.95rem;
   }
 
   .user-role {
-    font-size: 0.7rem;
+    font-size: 0.78rem;
   }
 
   .content-body {
-    padding: 0.75rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .content-header {
-    padding: 0.75rem;
-    padding-left: 4.5rem; /* Daha fazla boşluk */
-    gap: 0.75rem;
-  }
-
-  .header-user {
-    font-size: 0.8rem;
+    padding: 1.5rem;
   }
 }
 

@@ -286,15 +286,15 @@ export const Persons = () => {
               ) : (
                 filtered.map(p => (
                   <tr key={p.id}>
-                    <td className="name-cell">{p.fullName}</td>
-                    <td>{p.phone}</td>
-                    <td className="email-cell">{p.email || <span className="text-muted">—</span>}</td>
-                    <td>
+                    <td data-label="Ad Soyad" className="name-cell">{p.fullName}</td>
+                    <td data-label="Telefon">{p.phone}</td>
+                    <td data-label="E-posta" className="email-cell">{p.email || <span className="text-muted">—</span>}</td>
+                    <td data-label="Tip">
                       <span className={`type-badge ${p.personType === 'Owner' ? 'type-badge--owner' : 'type-badge--tenant'}`}>
                         {p.personType === 'Owner' ? 'Sahip' : 'Kiracı'}
                       </span>
                     </td>
-                    <td className="actions-cell">
+                    <td data-label="İşlemler" className="actions-cell">
                       <button className="icon-btn" onClick={() => handleEdit(p)} title="Düzenle">
                         <EditIcon />
                       </button>
