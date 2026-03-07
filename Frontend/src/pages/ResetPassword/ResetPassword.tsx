@@ -1,14 +1,10 @@
-﻿import { useState } from 'react';
+import { useState } from 'react';
+import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
-import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate, Link } from 'react-router-dom';
-import { register as registerAction } from '../../features/auth/authSlice';
-import type { AppDispatch, RootState } from '../../app/store';
+import { authApi } from '../../services/authApi';
 import '../Login/Login.css';
 
-interface RegisterForm {
-  companyName: string;
-  email: string;
+interface ResetForm {
   password: string;
   confirmPassword: string;
 }
@@ -25,62 +21,84 @@ const EyeOffIcon = () => (
   </svg>
 );
 
-export const Register = () => {
-  const dispatch = useDispatch<AppDispatch>();
+export const ResetPassword = () => {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { loading, error } = useSelector((s: RootState) => s.auth);
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<RegisterForm>();
+  const token = searchParams.get('token') ?? '';
+  const email = searchParams.get('email') ?? '';
 
+  const { register, handleSubmit, watch, formState: { errors } } = useForm<ResetForm>();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [serverError, setServerError] = useState('');
+  const [success, setSuccess] = useState(false);
   const password = watch('password');
 
-  const onSubmit = async (data: RegisterForm) => {
-    const payload = {
-      companyName: data.companyName,
-      companyEmail: data.email,
-      companyPhone: '',
-      firstName: data.companyName,
-      lastName: '',
-      email: data.email,
-      password: data.password,
-    };
-    const result = await dispatch(registerAction(payload));
-    if (registerAction.fulfilled.match(result)) navigate('/');
+  // Geçersiz link kontrolü
+  if (!token || !email) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card">
+          <div className="auth-logo"><span>Emlak SaaS</span></div>
+          <h1 className="auth-title">Geçersiz Bağlantı</h1>
+          <div className="auth-alert">Bu şifre sıfırlama bağlantısı geçersiz veya süresi dolmuş.</div>
+          <Link to="/login" className="auth-btn" style={{ display: 'block', textAlign: 'center', marginTop: '1rem', textDecoration: 'none' }}>
+            Giriş Sayfasına Dön
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const onSubmit = async (data: ResetForm) => {
+    setLoading(true);
+    setServerError('');
+    try {
+      await authApi.resetPassword(email, token, data.password);
+      setSuccess(true);
+    } catch (err: any) {
+      const msg = err.response?.data?.message;
+      setServerError(msg ?? 'Bir hata oluştu. Bağlantınız geçersiz veya süresi dolmuş olabilir.');
+    } finally {
+      setLoading(false);
+    }
   };
+
+  if (success) {
+    return (
+      <div className="auth-page">
+        <div className="auth-card">
+          <div className="auth-logo"><span>Emlak SaaS</span></div>
+          <div style={{ textAlign: 'center', padding: '1rem 0' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</div>
+            <h1 className="auth-title">Şifre Güncellendi!</h1>
+            <p style={{ color: 'rgba(255,255,255,0.75)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+              Şifreniz başarıyla güncellendi. Yeni şifrenizle giriş yapabilirsiniz.
+            </p>
+            <button className="auth-btn" onClick={() => navigate('/login')}>
+              Giriş Yap
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="auth-page">
       <div className="auth-card">
         <div className="auth-logo"><span>Emlak SaaS</span></div>
-        <h1 className="auth-title">Hesap Oluştur</h1>
-        {error && <div className="auth-alert">{error}</div>}
+        <h1 className="auth-title">Yeni Şifre Belirle</h1>
+        <p style={{ color: 'rgba(255,255,255,0.65)', fontSize: '0.85rem', marginBottom: '1.25rem' }}>
+          <strong style={{ color: 'rgba(255,255,255,0.9)' }}>{email}</strong> hesabı için yeni şifrenizi girin.
+        </p>
+
+        {serverError && <div className="auth-alert">{serverError}</div>}
 
         <form onSubmit={handleSubmit(onSubmit)} className="auth-form">
           <div className="auth-field">
-            <label>Şirket Adı</label>
-            <input
-              placeholder="ABC Emlak"
-              {...register('companyName', { required: 'Şirket adı zorunludur' })}
-            />
-            {errors.companyName && <span className="auth-field-error">{errors.companyName.message}</span>}
-          </div>
-
-          <div className="auth-field">
-            <label>E-posta</label>
-            <input
-              type="email"
-              placeholder="info@abcemlak.com"
-              {...register('email', {
-                required: 'E-posta zorunludur',
-                pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Geçerli bir e-posta giriniz' }
-              })}
-            />
-            {errors.email && <span className="auth-field-error">{errors.email.message}</span>}
-          </div>
-
-          <div className="auth-field">
-            <label>Şifre</label>
+            <label>Yeni Şifre</label>
             <div className="auth-input-wrapper">
               <input
                 type={showPassword ? 'text' : 'password'}
@@ -121,14 +139,15 @@ export const Register = () => {
           </div>
 
           <button type="submit" className="auth-btn" disabled={loading}>
-            {loading ? 'Kaydediliyor...' : 'Hesap Oluştur'}
+            {loading ? 'Güncelleniyor...' : 'Şifremi Güncelle'}
           </button>
         </form>
 
         <p className="auth-footer">
-          Zaten hesabınız var mı? <Link to="/login">Giriş Yap</Link>
+          <Link to="/login">← Giriş sayfasına dön</Link>
         </p>
       </div>
     </div>
   );
 };
+
