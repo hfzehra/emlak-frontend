@@ -295,12 +295,14 @@ export const Persons = () => {
                       </span>
                     </td>
                     <td data-label="İşlemler" className="actions-cell">
-                      <button className="icon-btn" onClick={() => handleEdit(p)} title="Düzenle">
-                        <EditIcon />
-                      </button>
-                      <button className="icon-btn icon-btn--danger" onClick={() => handleDelete(p.id)} title="Sil">
-                        <TrashIcon />
-                      </button>
+                      <div className="actions-buttons">
+                        <button className="icon-btn" onClick={() => handleEdit(p)} title="Düzenle">
+                          <EditIcon />
+                        </button>
+                        <button className="icon-btn icon-btn--danger" onClick={() => handleDelete(p.id)} title="Sil">
+                          <TrashIcon />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

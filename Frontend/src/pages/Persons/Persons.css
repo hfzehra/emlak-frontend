@@ -217,8 +217,13 @@
 
 /* Actions Cell */
 .actions-cell {
+  /* layout handled by inner .actions-buttons */
+}
+
+.actions-buttons {
   display: flex;
   gap: var(--spacing-xs);
+  align-items: center;
 }
 
 .icon-btn {
@@ -437,7 +442,12 @@
   }
 
   .actions-cell {
-    justify-content: flex-end;
+    justify-content: space-between;
+  }
+
+  .actions-buttons {
+    display: flex;
+    gap: var(--spacing-xs);
   }
 }
 
