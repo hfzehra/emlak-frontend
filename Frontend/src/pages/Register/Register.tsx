@@ -77,7 +77,7 @@ export const Register = () => {
           </div>
           <button type="submit" className="auth-btn" disabled={loading}>{loading ? 'Kaydediliyor...' : 'Sirket Olustur'}</button>
         </form>
-        <p className="auth-footer">Zaten hesabiniz var mi? <Link to="/login">Giris Yap</Link></p>
+        <p className="auth-footer">Zaten hesabiniz var mi?<Link to="/login">Giris Yap</Link></p>
       </div>
     </div>
   );
