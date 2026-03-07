@@ -36,6 +36,7 @@ interface DashboardStats {
   totalProperties: number; rentedProperties: number; vacantProperties: number;
   paidThisMonth: number; unpaidThisMonth: number; totalExpectedThisMonth: number;
   totalCommissionThisMonth: number;
+  totalAllTimeCommission: number;
   monthlyCommissions: MonthlyCommission[];
   recentProperties: RecentProperty[];
 }
@@ -108,8 +109,8 @@ export const Dashboard = () => {
     { 
       key: 'commission', 
       icon: <CheckCircleIcon />, 
-      label: 'Aylık Geliriniz', 
-      value: `${(stats?.totalCommissionThisMonth ?? 0).toLocaleString('tr-TR')} ₺`, 
+      label: 'Toplam Geliriniz', 
+      value: `${(stats?.totalAllTimeCommission ?? 0).toLocaleString('tr-TR')} ₺`, 
       type: 'warning' 
     },
   ];
