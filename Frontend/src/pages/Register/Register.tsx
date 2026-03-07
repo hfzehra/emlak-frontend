@@ -6,27 +6,43 @@ import type { AppDispatch, RootState } from '../../app/store';
 import '../Login/Login.css';
 
 interface RegisterForm {
-  companyName: string; companyEmail: string; companyPhone: string;
-  firstName: string; lastName: string; email: string; password: string;
+  companyName: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
 }
 
 export const Register = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { loading, error } = useSelector((s: RootState) => s.auth);
-  const { register, handleSubmit, formState: { errors } } = useForm<RegisterForm>();
+  const { register, handleSubmit, formState: { errors }, watch } = useForm<RegisterForm>();
 
   const onSubmit = async (data: RegisterForm) => {
-    const result = await dispatch(registerAction(data));
+    // Şirket e-postası olarak kullanıcı e-postasını kullan
+    const submitData = {
+      companyName: data.companyName,
+      companyEmail: data.email,
+      companyPhone: '',
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      password: data.password
+    };
+    const result = await dispatch(registerAction(submitData));
     if (registerAction.fulfilled.match(result)) navigate('/');
   };
+
+  const password = watch('password');
 
   return (
     <div className="auth-page">
       <div className="auth-card auth-card--wide">
         {/* Logo */}
         <div className="auth-logo">
-          <span>🏠 Emlak SaaS</span>
+          <span>Emlak SaaS</span>
         </div>
 
         <h1 className="auth-title">Şirket Kaydı</h1>
@@ -44,22 +60,6 @@ export const Register = () => {
               {...register('companyName', { required: 'Zorunlu' })}
             />
             {errors.companyName && <span className="auth-field-error">{errors.companyName.message}</span>}
-          </div>
-
-          <div className="auth-form-grid">
-            <div className="auth-field">
-              <label>Şirket E-posta</label>
-              <input
-                type="email"
-                placeholder="info@abc.com"
-                {...register('companyEmail', { required: 'Zorunlu' })}
-              />
-              {errors.companyEmail && <span className="auth-field-error">{errors.companyEmail.message}</span>}
-            </div>
-            <div className="auth-field">
-              <label>Şirket Telefon</label>
-              <input placeholder="0212 000 00 00" {...register('companyPhone')} />
-            </div>
           </div>
 
           {/* Admin user section */}
@@ -85,7 +85,7 @@ export const Register = () => {
           </div>
 
           <div className="auth-field">
-            <label>Kullanıcı E-posta</label>
+            <label>E-posta</label>
             <input
               type="email"
               placeholder="ahmet@abc.com"
@@ -112,6 +112,19 @@ export const Register = () => {
             <span className="auth-hint">Büyük harf, küçük harf ve rakam içermelidir</span>
           </div>
 
+          <div className="auth-field">
+            <label>Şifre Onayı</label>
+            <input
+              type="password"
+              placeholder="Şifreyi tekrar girin"
+              {...register('confirmPassword', {
+                required: 'Şifre onayı zorunludur',
+                validate: (value) => value === password || 'Şifreler eşleşmiyor'
+              })}
+            />
+            {errors.confirmPassword && <span className="auth-field-error">{errors.confirmPassword.message}</span>}
+          </div>
+
           <button type="submit" className="auth-btn" disabled={loading}>
             {loading ? 'Kaydediliyor...' : 'Şirket Oluştur'}
           </button>
@@ -124,4 +137,3 @@ export const Register = () => {
     </div>
   );
 };
-

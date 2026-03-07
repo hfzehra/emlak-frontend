@@ -26,17 +26,11 @@ apiClient.interceptors.request.use((config) => {
 apiClient.interceptors.response.use(
   (res) => res,
   (err) => {
-    // 401 Unauthorized - sadece login dışındaki sayfalarda yönlendir
     if (err.response?.status === 401) {
-      // Login endpoint'inden gelen 401'ler için yönlendirme yapma
-      const isLoginRequest = err.config?.url?.includes('/auth/login');
-      if (!isLoginRequest) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-        window.location.href = '/login';
-      }
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+      window.location.href = '/login';
     }
-    // Tüm hataları reject et - component'lar kendi hata mesajlarını göstersin
     return Promise.reject(err);
   }
 );

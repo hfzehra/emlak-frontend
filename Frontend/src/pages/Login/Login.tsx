@@ -28,7 +28,7 @@ export const Login = () => {
       <div className="auth-card">
         {/* Logo */}
         <div className="auth-logo">
-          <span>🏠 Emlak SaaS</span>
+          <span>Emlak SaaS</span>
         </div>
 
         <h1 className="auth-title">Giriş Yap</h1>

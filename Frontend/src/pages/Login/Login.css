@@ -7,7 +7,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: radial-gradient(ellipse at 65% 15%, #2563eb 0%, #1246cc 45%, #0a2a8f 100%);
+  background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-secondary) 100%);
   position: relative;
   overflow: hidden;
   padding: 1rem;
