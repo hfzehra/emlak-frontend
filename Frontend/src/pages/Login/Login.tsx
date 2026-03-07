@@ -21,47 +21,53 @@ export const Login = () => {
     if (login.fulfilled.match(result)) {
       navigate('/');
     }
-    // Hata zaten authSlice'da state'e yazılıyor, burada bir şey yapmaya gerek yok
   };
 
   return (
-    <div className="login-page">
-      <div className="login-card">
-        <div className="login-header">
-          <h1>🏠 Emlak SaaS</h1>
-          <p>Hesabınıza giriş yapın</p>
+    <div className="auth-page">
+      <div className="auth-card">
+        {/* Logo */}
+        <div className="auth-logo">
+          <span>🏠 Emlak SaaS</span>
         </div>
 
-        {error && <div className="alert alert-error">{error}</div>}
+        <h1 className="auth-title">Giriş Yap</h1>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="login-form">
-          <div className="form-group">
+        {error && <div className="auth-alert">{error}</div>}
+
+        <form onSubmit={handleSubmit(onSubmit)} className="auth-form">
+          {/* Email */}
+          <div className="auth-field">
             <label>E-posta</label>
             <input
               type="email"
-              placeholder="ornek@sirket.com"
+              placeholder="username@gmail.com"
               {...register('email', { required: 'E-posta zorunludur' })}
             />
-            {errors.email && <span className="field-error">{errors.email.message}</span>}
+            {errors.email && <span className="auth-field-error">{errors.email.message}</span>}
           </div>
 
-          <div className="form-group">
-            <label>Şifre</label>
+          {/* Password */}
+          <div className="auth-field">
+            <div className="auth-field-header">
+              <label>Şifre</label>
+              <button type="button" className="auth-forgot">Şifremi Unuttum?</button>
+            </div>
             <input
               type="password"
-              placeholder="••••••"
+              placeholder="••••••••"
               {...register('password', { required: 'Şifre zorunludur' })}
             />
-            {errors.password && <span className="field-error">{errors.password.message}</span>}
+            {errors.password && <span className="auth-field-error">{errors.password.message}</span>}
           </div>
 
-          <button type="submit" className="btn-primary" disabled={loading}>
+          <button type="submit" className="auth-btn" disabled={loading}>
             {loading ? 'Giriş yapılıyor...' : 'Giriş Yap'}
           </button>
         </form>
 
-        <p className="login-footer">
-          Hesabınız yok mu? <Link to="/register">Şirket Kaydı</Link>
+        <p className="auth-footer">
+          Hesabınız yok mu? <Link to="/register">Ücretsiz Kayıt Ol</Link>
         </p>
       </div>
     </div>

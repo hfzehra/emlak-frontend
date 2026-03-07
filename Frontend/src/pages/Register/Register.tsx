@@ -22,71 +22,104 @@ export const Register = () => {
   };
 
   return (
-    <div className="login-page">
-      <div className="login-card" style={{ maxWidth: 520 }}>
-        <div className="login-header">
-          <h1>🏠 Emlak SaaS</h1>
-          <p>Yeni şirket kaydı oluşturun</p>
+    <div className="auth-page">
+      <div className="auth-card auth-card--wide">
+        {/* Logo */}
+        <div className="auth-logo">
+          <span>🏠 Emlak SaaS</span>
         </div>
-        {error && <div className="alert alert-error">{error}</div>}
-        <form onSubmit={handleSubmit(onSubmit)} className="login-form">
-          <div className="form-group">
+
+        <h1 className="auth-title">Şirket Kaydı</h1>
+
+        {error && <div className="auth-alert">{error}</div>}
+
+        <form onSubmit={handleSubmit(onSubmit)} className="auth-form">
+          {/* Company info section */}
+          <p className="auth-section-label">Şirket Bilgileri</p>
+
+          <div className="auth-field">
             <label>Şirket Adı</label>
-            <input placeholder="ABC Emlak" {...register('companyName', { required: 'Zorunlu' })} />
-            {errors.companyName && <span className="field-error">{errors.companyName.message}</span>}
+            <input
+              placeholder="ABC Emlak"
+              {...register('companyName', { required: 'Zorunlu' })}
+            />
+            {errors.companyName && <span className="auth-field-error">{errors.companyName.message}</span>}
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div className="form-group">
+
+          <div className="auth-form-grid">
+            <div className="auth-field">
               <label>Şirket E-posta</label>
-              <input type="email" placeholder="info@abc.com" {...register('companyEmail', { required: 'Zorunlu' })} />
-              {errors.companyEmail && <span className="field-error">{errors.companyEmail.message}</span>}
+              <input
+                type="email"
+                placeholder="info@abc.com"
+                {...register('companyEmail', { required: 'Zorunlu' })}
+              />
+              {errors.companyEmail && <span className="auth-field-error">{errors.companyEmail.message}</span>}
             </div>
-            <div className="form-group">
+            <div className="auth-field">
               <label>Şirket Telefon</label>
-              <input placeholder="0212..." {...register('companyPhone')} />
+              <input placeholder="0212 000 00 00" {...register('companyPhone')} />
             </div>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
-            <div className="form-group">
+
+          {/* Admin user section */}
+          <p className="auth-section-label">Yönetici Bilgileri</p>
+
+          <div className="auth-form-grid">
+            <div className="auth-field">
               <label>Ad</label>
-              <input placeholder="Ahmet" {...register('firstName', { required: 'Zorunlu' })} />
-              {errors.firstName && <span className="field-error">{errors.firstName.message}</span>}
+              <input
+                placeholder="Ahmet"
+                {...register('firstName', { required: 'Zorunlu' })}
+              />
+              {errors.firstName && <span className="auth-field-error">{errors.firstName.message}</span>}
             </div>
-            <div className="form-group">
+            <div className="auth-field">
               <label>Soyad</label>
-              <input placeholder="Yılmaz" {...register('lastName', { required: 'Zorunlu' })} />
-              {errors.lastName && <span className="field-error">{errors.lastName.message}</span>}
+              <input
+                placeholder="Yılmaz"
+                {...register('lastName', { required: 'Zorunlu' })}
+              />
+              {errors.lastName && <span className="auth-field-error">{errors.lastName.message}</span>}
             </div>
           </div>
-          <div className="form-group">
+
+          <div className="auth-field">
             <label>Kullanıcı E-posta</label>
-            <input type="email" placeholder="ahmet@abc.com" {...register('email', { required: 'Zorunlu' })} />
-            {errors.email && <span className="field-error">{errors.email.message}</span>}
+            <input
+              type="email"
+              placeholder="ahmet@abc.com"
+              {...register('email', { required: 'Zorunlu' })}
+            />
+            {errors.email && <span className="auth-field-error">{errors.email.message}</span>}
           </div>
-          <div className="form-group">
+
+          <div className="auth-field">
             <label>Şifre</label>
-            <input 
-              type="password" 
-              placeholder="En az 6 karakter, büyük/küçük harf ve rakam" 
-              {...register('password', { 
+            <input
+              type="password"
+              placeholder="En az 6 karakter"
+              {...register('password', {
                 required: 'Şifre zorunludur',
                 minLength: { value: 6, message: 'En az 6 karakter olmalıdır' },
                 pattern: {
                   value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
                   message: 'Büyük harf, küçük harf ve rakam içermelidir'
                 }
-              })} 
+              })}
             />
-            {errors.password && <span className="field-error">{errors.password.message}</span>}
-            <small style={{ fontSize: '0.75rem', color: '#6b7280', marginTop: '0.25rem' }}>
-              Güvenli bir şifre için: En az 6 karakter, büyük harf, küçük harf ve rakam kullanın
-            </small>
+            {errors.password && <span className="auth-field-error">{errors.password.message}</span>}
+            <span className="auth-hint">Büyük harf, küçük harf ve rakam içermelidir</span>
           </div>
-          <button type="submit" className="btn-primary" disabled={loading}>
+
+          <button type="submit" className="auth-btn" disabled={loading}>
             {loading ? 'Kaydediliyor...' : 'Şirket Oluştur'}
           </button>
         </form>
-        <p className="login-footer">Zaten hesabınız var mı? <Link to="/login">Giriş Yap</Link></p>
+
+        <p className="auth-footer">
+          Zaten hesabınız var mı? <Link to="/login">Giriş Yap</Link>
+        </p>
       </div>
     </div>
   );
