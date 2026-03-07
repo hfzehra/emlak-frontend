@@ -8,7 +8,7 @@ import './PropertyWizard.css';
 export interface WizardData {
   existingOwnerId?: string;
   ownerFirstName?: string; ownerLastName?: string;
-  ownerPhone?: string; ownerEmail?: string;
+  ownerPhone?: string; ownerEmail?: string; ownerIdentityNumber?: string;
   isRented: boolean;
   existingTenantId?: string;
   tenantFirstName?: string; tenantLastName?: string;
