@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react';
+﻿﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../services/apiClient';
 import './Properties.css';
@@ -16,10 +16,11 @@ const SearchIcon = () => (
   </svg>
 );
 
-const TrashIcon = () => (
+const ArchiveIcon = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-    <polyline points="3 6 5 6 21 6"/>
-    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+    <polyline points="21 8 21 21 3 21 3 8"/>
+    <rect x="1" y="3" width="22" height="5"/>
+    <line x1="10" y1="12" x2="14" y2="12"/>
   </svg>
 );
 
@@ -54,7 +55,7 @@ export const Properties = () => {
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    if (!confirm('Bu mülkü silmek istediğinize emin misiniz?')) return;
+    if (!confirm('Bu mülkü arşivlemek istediğinize emin misiniz?')) return;
     try {
       await apiClient.delete(`/properties/${id}`);
       fetchProperties();
@@ -167,9 +168,9 @@ export const Properties = () => {
                 <button 
                   className="icon-btn icon-btn--danger" 
                   onClick={(e) => handleDelete(e, p.id)}
-                  title="Sil"
+                  title="Arşivle"
                 >
-                  <TrashIcon />
+                  <ArchiveIcon />
                 </button>
               </div>
             </div>

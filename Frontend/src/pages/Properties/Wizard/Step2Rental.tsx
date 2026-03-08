@@ -1,4 +1,5 @@
-﻿import type { WizardData } from './PropertyWizard';
+﻿import { PhoneInput } from '../../../components/PhoneInput';
+import type { WizardData } from './PropertyWizard';
 
 interface Props { data: Partial<WizardData>; onChange: (d: Partial<WizardData>) => void; }
 
@@ -24,7 +25,7 @@ export const Step2Rental = ({ data, onChange }: Props) => (
           </div>
           <div className="form-group">
             <label>Telefon *</label>
-            <input value={data.tenantPhone ?? ''} onChange={e => onChange({ tenantPhone: e.target.value })} placeholder="0533..." />
+            <PhoneInput value={data.tenantPhone ?? ''} onChange={v => onChange({ tenantPhone: v })} />
           </div>
           <div className="form-group">
             <label>E-posta</label>
@@ -33,14 +34,6 @@ export const Step2Rental = ({ data, onChange }: Props) => (
         </div>
         <h4 style={{ marginTop: '1.5rem' }}>Sözleşme Bilgileri</h4>
         <div className="form-grid">
-          <div className="form-group">
-            <label>Kira Tutarı (₺) *</label>
-            <input type="number" value={data.contractRentAmount ?? ''} onChange={e => onChange({ contractRentAmount: +e.target.value })} />
-          </div>
-          <div className="form-group">
-            <label>Depozito (₺)</label>
-            <input type="number" value={data.deposit ?? ''} onChange={e => onChange({ deposit: +e.target.value })} />
-          </div>
           <div className="form-group">
             <label>Başlangıç Tarihi *</label>
             <input type="date" value={data.contractStartDate ?? ''} onChange={e => onChange({ contractStartDate: e.target.value })} />
@@ -54,4 +47,3 @@ export const Step2Rental = ({ data, onChange }: Props) => (
     )}
   </div>
 );
-

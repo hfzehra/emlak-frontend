@@ -1,5 +1,6 @@
-﻿import { useState } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { apiClient } from '../../../services/apiClient';
+import { PhoneInput } from '../../../components/PhoneInput';
 import type { WizardData } from './PropertyWizard';
 
 interface Props { data: Partial<WizardData>; onChange: (d: Partial<WizardData>) => void; }
@@ -7,13 +8,21 @@ interface Props { data: Partial<WizardData>; onChange: (d: Partial<WizardData>) 
 export const Step1Owner = ({ data, onChange }: Props) => {
   const [mode, setMode] = useState<'new' | 'existing'>(data.existingOwnerId ? 'existing' : 'new');
   const [search, setSearch] = useState('');
-  const [results, setResults] = useState<any[]>([]);
+  const [allOwners, setAllOwners] = useState<{ id: string; fullName: string; phone: string }[]>([]);
+  const [results, setResults] = useState<{ id: string; fullName: string; phone: string }[]>([]);
 
-  const searchOwners = async (q: string) => {
+  useEffect(() => {
+    if (mode === 'existing') {
+      apiClient.get<{ id: string; fullName: string; phone: string }[]>('/persons?personType=0')
+        .then(r => { setAllOwners(r.data); setResults(r.data); })
+        .catch(() => {});
+    }
+  }, [mode]);
+
+  const searchOwners = (q: string) => {
     setSearch(q);
-    if (q.length < 2) return;
-    const res = await apiClient.get(`/persons?personType=0&search=${q}`);
-    setResults(res.data);
+    if (!q) { setResults(allOwners); return; }
+    setResults(allOwners.filter(o => o.fullName.toLowerCase().includes(q.toLowerCase()) || o.phone.includes(q)));
   };
 
   return (
@@ -36,34 +45,32 @@ export const Step1Owner = ({ data, onChange }: Props) => {
           </div>
           <div className="form-group">
             <label>Telefon *</label>
-            <input value={data.ownerPhone ?? ''} onChange={e => onChange({ ownerPhone: e.target.value })} placeholder="0532..." />
+            <PhoneInput value={data.ownerPhone ?? ''} onChange={v => onChange({ ownerPhone: v })} />
           </div>
           <div className="form-group">
             <label>E-posta</label>
             <input type="email" value={data.ownerEmail ?? ''} onChange={e => onChange({ ownerEmail: e.target.value })} placeholder="ahmet@..." />
           </div>
-          <div className="form-group">
-            <label>TC Kimlik No</label>
-            <input value={data.ownerIdentityNumber ?? ''} onChange={e => onChange({ ownerIdentityNumber: e.target.value })} placeholder="12345678901" maxLength={11} />
-          </div>
         </div>
       ) : (
         <div>
           <div className="form-group">
-            <label>Sahip Ara</label>
-            <input value={search} onChange={e => searchOwners(e.target.value)} placeholder="Ad, telefon ile ara..." />
+            <label>Sahip Ara / Seç</label>
+            <input value={search} onChange={e => searchOwners(e.target.value)} placeholder="Ada göre filtrele..." style={{ marginBottom: '0.5rem' }} />
+            <select
+              value={data.existingOwnerId ?? ''}
+              onChange={e => onChange({ existingOwnerId: e.target.value })}
+              style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1.5px solid #e2e8f0' }}
+            >
+              <option value="">-- Sahip Seçin --</option>
+              {results.map(r => (
+                <option key={r.id} value={r.id}>{r.fullName} — {r.phone}</option>
+              ))}
+            </select>
           </div>
-          {results.map((r: any) => (
-            <div key={r.id}
-              className={`search-result ${data.existingOwnerId === r.id ? 'selected' : ''}`}
-              onClick={() => onChange({ existingOwnerId: r.id })}>
-              <strong>{r.fullName}</strong> — {r.phone}
-            </div>
-          ))}
-          {data.existingOwnerId && <p className="selected-info">✓ Seçildi</p>}
+          {data.existingOwnerId && <p className="selected-info">✓ Sahip Seçildi</p>}
         </div>
       )}
     </div>
   );
 };
-
