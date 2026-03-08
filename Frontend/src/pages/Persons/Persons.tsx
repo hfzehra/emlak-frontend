@@ -1,5 +1,6 @@
-﻿import { useEffect, useState } from 'react';
+﻿﻿import { useEffect, useState } from 'react';
 import { apiClient } from '../../services/apiClient';
+import { PhoneInput } from '../../components/PhoneInput';
 import './Persons.css';
 
 // Icons
@@ -192,12 +193,9 @@ export const Persons = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label>Telefon *</label>
-                  <input
-                    type="tel"
-                    value={formatPhoneInput(form.phone)}
-                    onChange={e => setForm({ ...form, phone: e.target.value })}
-                    placeholder="0532 123 45 67"
-                    maxLength={15}
+                  <PhoneInput
+                    value={form.phone}
+                    onChange={v => setForm({ ...form, phone: v })}
                     required
                   />
                 </div>
