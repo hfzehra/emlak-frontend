@@ -1,6 +1,5 @@
 ﻿﻿import { useEffect, useState } from 'react';
 import { apiClient } from '../../services/apiClient';
-import { PhoneInput } from '../../components/PhoneInput';
 import './Persons.css';
 
 // Icons
@@ -105,17 +104,6 @@ export const Persons = () => {
     }
   };
 
-  const formatPhoneInput = (value: string) => {
-    // Sadece rakamları al
-    const cleaned = value.replace(/\D/g, '');
-    
-    // Formatla: 0532 123 45 67
-    if (cleaned.length <= 4) return cleaned;
-    if (cleaned.length <= 7) return `${cleaned.slice(0, 4)} ${cleaned.slice(4)}`;
-    if (cleaned.length <= 9) return `${cleaned.slice(0, 4)} ${cleaned.slice(4, 7)} ${cleaned.slice(7)}`;
-    return `${cleaned.slice(0, 4)} ${cleaned.slice(4, 7)} ${cleaned.slice(7, 9)} ${cleaned.slice(9, 11)}`;
-  };
-
   const handleEdit = (person: Person) => {
     const nameParts = person.fullName.split(' ');
     const firstName = nameParts[0] || '';
@@ -193,9 +181,12 @@ export const Persons = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label>Telefon *</label>
-                  <PhoneInput
+                  <input
+                    type="tel"
                     value={form.phone}
-                    onChange={v => setForm({ ...form, phone: v })}
+                    onChange={e => setForm({ ...form, phone: e.target.value })}
+                    placeholder="0532 123 45 67"
+                    maxLength={15}
                     required
                   />
                 </div>

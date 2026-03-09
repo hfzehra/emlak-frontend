@@ -1,5 +1,4 @@
-﻿import { useState } from 'react';
-import { useForm } from 'react-hook-form';
+﻿import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { register as registerAction } from '../../features/auth/authSlice';
@@ -7,121 +6,114 @@ import type { AppDispatch, RootState } from '../../app/store';
 import '../Login/Login.css';
 
 interface RegisterForm {
-  companyName: string;
-  email: string;
-  password: string;
-  confirmPassword: string;
+  companyName: string; companyEmail: string; companyPhone: string;
+  firstName: string; lastName: string; email: string; password: string;
 }
-
-const EyeIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>
-  </svg>
-);
-const EyeOffIcon = () => (
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
-    <line x1="1" y1="1" x2="23" y2="23"/>
-  </svg>
-);
 
 export const Register = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
   const { loading, error } = useSelector((s: RootState) => s.auth);
-  const { register, handleSubmit, watch, formState: { errors } } = useForm<RegisterForm>();
-
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirm, setShowConfirm] = useState(false);
-  const password = watch('password');
+  const { register, handleSubmit, formState: { errors } } = useForm<RegisterForm>();
 
   const onSubmit = async (data: RegisterForm) => {
-    const payload = {
-      companyName: data.companyName,
-      companyEmail: data.email,
-      companyPhone: '',
-      firstName: data.companyName,
-      lastName: '',
-      email: data.email,
-      password: data.password,
-    };
-    const result = await dispatch(registerAction(payload));
+    const result = await dispatch(registerAction(data));
     if (registerAction.fulfilled.match(result)) navigate('/');
   };
 
   return (
     <div className="auth-page">
-      <div className="auth-card">
-        <div className="auth-logo"><span>Emlak SaaS</span></div>
-        <h1 className="auth-title">Hesap Oluştur</h1>
+      <div className="auth-card auth-card--wide">
+        {/* Logo */}
+        <div className="auth-logo">
+          <span>Emlak SaaS</span>
+        </div>
+
+        <h1 className="auth-title">Şirket Kaydı</h1>
+
         {error && <div className="auth-alert">{error}</div>}
 
         <form onSubmit={handleSubmit(onSubmit)} className="auth-form">
+          {/* Company info section */}
+          <p className="auth-section-label">Şirket Bilgileri</p>
+
           <div className="auth-field">
             <label>Şirket Adı</label>
             <input
               placeholder="ABC Emlak"
-              {...register('companyName', { required: 'Şirket adı zorunludur' })}
+              {...register('companyName', { required: 'Zorunlu' })}
             />
             {errors.companyName && <span className="auth-field-error">{errors.companyName.message}</span>}
           </div>
 
+          <div className="auth-form-grid">
+            <div className="auth-field">
+              <label>Şirket E-posta</label>
+              <input
+                type="email"
+                placeholder="info@abc.com"
+                {...register('companyEmail', { required: 'Zorunlu' })}
+              />
+              {errors.companyEmail && <span className="auth-field-error">{errors.companyEmail.message}</span>}
+            </div>
+            <div className="auth-field">
+              <label>Şirket Telefon</label>
+              <input placeholder="0212 000 00 00" {...register('companyPhone')} />
+            </div>
+          </div>
+
+          {/* Admin user section */}
+          <p className="auth-section-label">Yönetici Bilgileri</p>
+
+          <div className="auth-form-grid">
+            <div className="auth-field">
+              <label>Ad</label>
+              <input
+                placeholder="Ahmet"
+                {...register('firstName', { required: 'Zorunlu' })}
+              />
+              {errors.firstName && <span className="auth-field-error">{errors.firstName.message}</span>}
+            </div>
+            <div className="auth-field">
+              <label>Soyad</label>
+              <input
+                placeholder="Yılmaz"
+                {...register('lastName', { required: 'Zorunlu' })}
+              />
+              {errors.lastName && <span className="auth-field-error">{errors.lastName.message}</span>}
+            </div>
+          </div>
+
           <div className="auth-field">
-            <label>E-posta</label>
+            <label>Kullanıcı E-posta</label>
             <input
               type="email"
-              placeholder="info@abcemlak.com"
-              {...register('email', {
-                required: 'E-posta zorunludur',
-                pattern: { value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/, message: 'Geçerli bir e-posta giriniz' }
-              })}
+              placeholder="ahmet@abc.com"
+              {...register('email', { required: 'Zorunlu' })}
             />
             {errors.email && <span className="auth-field-error">{errors.email.message}</span>}
           </div>
 
           <div className="auth-field">
             <label>Şifre</label>
-            <div className="auth-input-wrapper">
-              <input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="En az 6 karakter"
-                {...register('password', {
-                  required: 'Şifre zorunludur',
-                  minLength: { value: 6, message: 'En az 6 karakter olmalıdır' },
-                  pattern: {
-                    value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
-                    message: 'Büyük harf, küçük harf ve rakam içermelidir'
-                  }
-                })}
-              />
-              <button type="button" className="auth-eye-btn" onClick={() => setShowPassword(p => !p)} tabIndex={-1}>
-                {showPassword ? <EyeOffIcon /> : <EyeIcon />}
-              </button>
-            </div>
+            <input
+              type="password"
+              placeholder="En az 6 karakter"
+              {...register('password', {
+                required: 'Şifre zorunludur',
+                minLength: { value: 6, message: 'En az 6 karakter olmalıdır' },
+                pattern: {
+                  value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/,
+                  message: 'Büyük harf, küçük harf ve rakam içermelidir'
+                }
+              })}
+            />
             {errors.password && <span className="auth-field-error">{errors.password.message}</span>}
-            <span className="auth-hint">En az 6 karakter, büyük/küçük harf ve rakam içermelidir</span>
-          </div>
-
-          <div className="auth-field">
-            <label>Şifre Onayı</label>
-            <div className="auth-input-wrapper">
-              <input
-                type={showConfirm ? 'text' : 'password'}
-                placeholder="Şifrenizi tekrar girin"
-                {...register('confirmPassword', {
-                  required: 'Şifre onayı zorunludur',
-                  validate: (val) => val === password || 'Şifreler eşleşmiyor'
-                })}
-              />
-              <button type="button" className="auth-eye-btn" onClick={() => setShowConfirm(p => !p)} tabIndex={-1}>
-                {showConfirm ? <EyeOffIcon /> : <EyeIcon />}
-              </button>
-            </div>
-            {errors.confirmPassword && <span className="auth-field-error">{errors.confirmPassword.message}</span>}
+            <span className="auth-hint">Büyük harf, küçük harf ve rakam içermelidir</span>
           </div>
 
           <button type="submit" className="auth-btn" disabled={loading}>
-            {loading ? 'Kaydediliyor...' : 'Hesap Oluştur'}
+            {loading ? 'Kaydediliyor...' : 'Şirket Oluştur'}
           </button>
         </form>
 
@@ -132,3 +124,4 @@ export const Register = () => {
     </div>
   );
 };
+
