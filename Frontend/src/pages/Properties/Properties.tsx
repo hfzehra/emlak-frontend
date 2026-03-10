@@ -37,6 +37,8 @@ export const Properties = () => {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'all' | 'rented' | 'vacant'>('all');
   const [search, setSearch] = useState('');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
   const [error, setError] = useState('');
 
   const fetchProperties = () => {
@@ -65,11 +67,23 @@ export const Properties = () => {
     }
   };
 
-  const filtered = properties.filter(p =>
-    p.shortAddress?.toLowerCase().includes(search.toLowerCase()) ||
-    p.ownerName?.toLowerCase().includes(search.toLowerCase()) ||
-    p.propertyNumber?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filtered = properties.filter(p => {
+    // Arama filtresi
+    const searchMatch = p.shortAddress?.toLowerCase().includes(search.toLowerCase()) ||
+      p.ownerName?.toLowerCase().includes(search.toLowerCase()) ||
+      p.propertyNumber?.toLowerCase().includes(search.toLowerCase());
+    
+    if (!searchMatch) return false;
+
+    // Tarih filtresi (createdAt bazında)
+    if (dateFrom || dateTo) {
+      const createdDate = new Date(p.createdAt);
+      if (dateFrom && createdDate < new Date(dateFrom)) return false;
+      if (dateTo && createdDate > new Date(dateTo + 'T23:59:59')) return false;
+    }
+
+    return true;
+  });
 
   return (
     <div className="properties-page">
@@ -93,6 +107,33 @@ export const Properties = () => {
             value={search}
             onChange={e => setSearch(e.target.value)}
           />
+        </div>
+        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+            <label style={{ fontSize: '0.85rem', color: '#64748b', whiteSpace: 'nowrap' }}>Tarih:</label>
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={e => setDateFrom(e.target.value)}
+              style={{ padding: '0.45rem 0.6rem', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.85rem' }}
+            />
+            <span style={{ color: '#94a3b8' }}>—</span>
+            <input
+              type="date"
+              value={dateTo}
+              onChange={e => setDateTo(e.target.value)}
+              style={{ padding: '0.45rem 0.6rem', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.85rem' }}
+            />
+            {(dateFrom || dateTo) && (
+              <button
+                onClick={() => { setDateFrom(''); setDateTo(''); }}
+                style={{ padding: '0.45rem 0.7rem', background: '#f1f5f9', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem', color: '#64748b' }}
+                title="Tarihleri Temizle"
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
         <div className="filter-tabs">
           {(['all', 'rented', 'vacant'] as const).map(f => (

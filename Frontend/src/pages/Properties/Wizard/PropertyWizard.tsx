@@ -323,7 +323,7 @@ export const PropertyWizard = () => {
       console.log('Başarılı:', response.data);
       navigate('/mulkler');
     } catch (e: unknown) {
-      const err = e as { response?: { status?: number; data?: { title?: string; errors?: Array<{field: string; message: string}>; detail?: string; innerDetail?: string } } };
+      const err = e as { response?: { status?: number; data?: { title?: string; errors?: Record<string, string[]>; detail?: string; innerDetail?: string } } };
       console.error('Wizard hatası:', err.response?.data);
       
       const status = err.response?.status;
@@ -335,9 +335,11 @@ export const PropertyWizard = () => {
         return;
       }
       
-      // Validation hatalarını göster
-      if (errorData?.errors) {
-        const validationErrors = errorData.errors.map(e => `${e.field}: ${e.message}`).join('\n');
+      // Validation hatalarını göster (ASP.NET Core format: { "FieldName": ["error1", "error2"] })
+      if (errorData?.errors && typeof errorData.errors === 'object') {
+        const validationErrors = Object.entries(errorData.errors)
+          .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+          .join('\n');
         setError(`Doğrulama Hatası:\n${validationErrors}`);
       } else if (errorData?.detail) {
         setError(errorData.detail);
