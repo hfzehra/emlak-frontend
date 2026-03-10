@@ -8,12 +8,12 @@ interface Props { data: Partial<WizardData>; onChange: (d: Partial<WizardData>) 
 export const Step1Owner = ({ data, onChange }: Props) => {
   const [mode, setMode] = useState<'new' | 'existing'>(data.existingOwnerId ? 'existing' : 'new');
   const [search, setSearch] = useState('');
-  const [allOwners, setAllOwners] = useState<{ id: string; fullName: string; phone: string }[]>([]);
-  const [results, setResults] = useState<{ id: string; fullName: string; phone: string }[]>([]);
+  const [allOwners, setAllOwners] = useState<{ id: string; fullName: string; phone: string; email?: string }[]>([]);
+  const [results, setResults] = useState<{ id: string; fullName: string; phone: string; email?: string }[]>([]);
 
   useEffect(() => {
     if (mode === 'existing') {
-      apiClient.get<{ id: string; fullName: string; phone: string }[]>('/persons?personType=0')
+      apiClient.get<{ id: string; fullName: string; phone: string; email?: string }[]>('/persons?personType=0')
         .then(r => { setAllOwners(r.data); setResults(r.data); })
         .catch(() => {});
     }
@@ -24,6 +24,8 @@ export const Step1Owner = ({ data, onChange }: Props) => {
     if (!q) { setResults(allOwners); return; }
     setResults(allOwners.filter(o => o.fullName.toLowerCase().includes(q.toLowerCase()) || o.phone.includes(q)));
   };
+
+  const selectedOwner = allOwners.find(o => o.id === data.existingOwnerId);
 
   return (
     <div className="step-content">
@@ -56,11 +58,11 @@ export const Step1Owner = ({ data, onChange }: Props) => {
         <div>
           <div className="form-group">
             <label>Sahip Ara / Seç</label>
-            <input value={search} onChange={e => searchOwners(e.target.value)} placeholder="Ada göre filtrele..." style={{ marginBottom: '0.5rem' }} />
+            <input value={search} onChange={e => searchOwners(e.target.value)} placeholder="Ad, telefon ile ara..." style={{ marginBottom: '0.5rem' }} />
             <select
               value={data.existingOwnerId ?? ''}
               onChange={e => onChange({ existingOwnerId: e.target.value })}
-              style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1.5px solid #e2e8f0' }}
+              style={{ width: '100%', padding: '0.6rem', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.9rem' }}
             >
               <option value="">-- Sahip Seçin --</option>
               {results.map(r => (
@@ -68,7 +70,14 @@ export const Step1Owner = ({ data, onChange }: Props) => {
               ))}
             </select>
           </div>
-          {data.existingOwnerId && <p className="selected-info">✓ Sahip Seçildi</p>}
+          {selectedOwner && (
+            <div style={{ marginTop: '1rem', padding: '0.8rem', background: '#dcfce7', borderRadius: '8px', border: '1px solid #bbf7d0' }}>
+              <p style={{ margin: '0 0 0.3rem', fontWeight: 700, color: '#166534' }}>✓ Seçilen Sahip:</p>
+              <p style={{ margin: '0.2rem 0', fontSize: '0.9rem', color: '#166534' }}><strong>Ad Soyad:</strong> {selectedOwner.fullName}</p>
+              <p style={{ margin: '0.2rem 0', fontSize: '0.9rem', color: '#166534' }}><strong>Telefon:</strong> {selectedOwner.phone}</p>
+              {selectedOwner.email && <p style={{ margin: '0.2rem 0', fontSize: '0.9rem', color: '#166534' }}><strong>E-posta:</strong> {selectedOwner.email}</p>}
+            </div>
+          )}
         </div>
       )}
     </div>

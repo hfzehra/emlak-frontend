@@ -177,23 +177,68 @@ const Step3Property = ({ data, onChange }: StepProps) => {
 };
 
 // ---- Step4Financial ----
-const Step4Financial = ({ data, onChange }: StepProps) => (
-  <div className="step-content">
-    <h3>Adım 4: Finansal Bilgiler</h3>
-    <div className="form-grid">
-      <div className="form-group"><label>Aylık Kira (₺) *</label><input type="number" value={data.monthlyRent ?? ''} onChange={e => onChange({ monthlyRent: +e.target.value })} placeholder="5000" /></div>
-      <div className="form-group"><label>Kira Vadesi (Ayın Kaçı)</label><input type="number" min="1" max="28" value={data.rentDueDay ?? 1} onChange={e => onChange({ rentDueDay: +e.target.value })} /></div>
-      <div className="form-group"><label>Komisyon (₺)</label><input type="number" value={data.commission ?? ''} onChange={e => onChange({ commission: +e.target.value })} placeholder="Opsiyonel" /></div>
+const Step4Financial = ({ data, onChange }: StepProps) => {
+  const commType = data.commissionType ?? 'percent';
+  const commRate = data.commissionRate ?? 0;
+  const includeVat = data.commissionIncludesVat ?? false;
+  const monthlyRent = data.monthlyRent ?? 0;
+
+  const commission = (() => {
+    const base = commType === 'percent' ? (monthlyRent * commRate / 100) : commRate;
+    return includeVat ? base * 1.20 : base;
+  })();
+
+  return (
+    <div className="step-content">
+      <h3>Adım 4: Finansal Bilgiler</h3>
+      <div className="form-grid">
+        <div className="form-group">
+          <label>Aylık Kira (₺) *</label>
+          <input type="number" value={data.monthlyRent ?? ''} onChange={e => onChange({ monthlyRent: +e.target.value })} placeholder="5000" />
+        </div>
+        <div className="form-group">
+          <label>Kira Vadesi (Ayın Kaçı)</label>
+          <input type="number" min="1" max="28" value={data.rentDueDay ?? 1} onChange={e => onChange({ rentDueDay: +e.target.value })} />
+        </div>
+      </div>
+
+      <div style={{ marginTop: '1.2rem', padding: '1rem', background: '#f8fafc', borderRadius: '10px', border: '1px solid #e2e8f0' }}>
+        <h4 style={{ margin: '0 0 0.8rem' }}>Komisyon Ayarları</h4>
+        <div className="mode-toggle" style={{ marginBottom: '0.8rem' }}>
+          <button className={commType === 'percent' ? 'active' : ''} onClick={() => onChange({ commissionType: 'percent', commissionRate: 0 })}>% Yüzde</button>
+          <button className={commType === 'fixed' ? 'active' : ''} onClick={() => onChange({ commissionType: 'fixed', commissionRate: 0 })}>₺ Sabit</button>
+        </div>
+        <div className="form-grid">
+          <div className="form-group">
+            <label>{commType === 'percent' ? 'Oran (%)' : 'Tutar (₺)'}</label>
+            <input type="number" value={commRate || ''} onChange={e => onChange({ commissionRate: +e.target.value })} placeholder={commType === 'percent' ? '10' : '5000'} />
+          </div>
+          <div className="form-group">
+            <label>Hesaplanan</label>
+            <input type="text" readOnly value={commRate > 0 ? `${commission.toLocaleString('tr-TR', { maximumFractionDigits: 2 })} ₺` : '—'} style={{ background: '#f1f5f9', color: '#475569', cursor: 'not-allowed' }} />
+          </div>
+        </div>
+        <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem', cursor: 'pointer' }}>
+          <input type="checkbox" checked={includeVat} onChange={e => onChange({ commissionIncludesVat: e.target.checked })} />
+          <span>KDV Dahil (+%20)</span>
+        </label>
+        {commRate > 0 && (
+          <div style={{ marginTop: '0.8rem', padding: '0.6rem 0.8rem', background: '#eff6ff', borderRadius: '8px', fontSize: '0.85rem', color: '#1e40af' }}>
+            💰 Kira: <strong>{monthlyRent.toLocaleString('tr-TR')} ₺</strong> + Komisyon: <strong>{commission.toLocaleString('tr-TR', { maximumFractionDigits: 2 })} ₺</strong>
+          </div>
+        )}
+      </div>
+
+      <div className="wizard-summary" style={{ marginTop: '1.2rem' }}>
+        <h4>📋 Özet</h4>
+        <p>📍 {data.district}, {data.city} — {data.shortAddress}</p>
+        <p>💰 Aylık Kira: <strong>{(data.monthlyRent ?? 0).toLocaleString('tr-TR')} ₺</strong></p>
+        <p>🗓️ Vade: Ayın {data.rentDueDay ?? 1}. günü</p>
+        <p>🏠 Durum: <strong>{data.isRented ? 'Kirada' : 'Boş'}</strong></p>
+      </div>
     </div>
-    <div className="wizard-summary">
-      <h4>📋 Özet</h4>
-      <p>📍 {data.district}, {data.city} — {data.shortAddress}</p>
-      <p>💰 Aylık Kira: <strong>{(data.monthlyRent ?? 0).toLocaleString('tr-TR')} ₺</strong></p>
-      <p>🗓️ Vade: Ayın {data.rentDueDay ?? 1}. günü</p>
-      <p>🏠 Durum: <strong>{data.isRented ? 'Kirada' : 'Boş'}</strong></p>
-    </div>
-  </div>
-);
+  );
+};
 
 // ---- PropertyWizard ----
 const STEPS = ['Mülk Sahibi', 'Kiralık Mı?', 'Mülk Bilgisi', 'Finansal'];
@@ -207,7 +252,60 @@ export const PropertyWizard = () => {
 
   const updateData = (partial: Partial<WizardData>) => setData(prev => ({ ...prev, ...partial }));
 
+  // Adım validation fonksiyonu
+  const validateStep = (currentStep: number): string | null => {
+    switch (currentStep) {
+      case 0: // Mülk Sahibi
+        if (data.existingOwnerId) {
+          return null; // Mevcut sahip seçildi, OK
+        }
+        if (!data.ownerFirstName?.trim()) return 'Sahip adı gerekli.';
+        if (!data.ownerLastName?.trim()) return 'Sahip soyadı gerekli.';
+        if (!data.ownerPhone?.trim()) return 'Sahip telefonu gerekli.';
+        return null;
+
+      case 1: // Kiralık mı?
+        if (data.isRented) {
+          if (!data.tenantFirstName?.trim()) return 'Kiracı adı gerekli.';
+          if (!data.tenantLastName?.trim()) return 'Kiracı soyadı gerekli.';
+          if (!data.tenantPhone?.trim()) return 'Kiracı telefonu gerekli.';
+          if (!data.contractStartDate) return 'Sözleşme başlangıç tarihi gerekli.';
+          if (!data.contractEndDate) return 'Sözleşme bitiş tarihi gerekli.';
+        }
+        return null;
+
+      case 2: // Mülk Bilgisi
+        if (!data.city?.trim()) return 'Şehir seçimi gerekli.';
+        if (!data.district?.trim()) return 'İlçe seçimi gerekli.';
+        if (!data.shortAddress?.trim()) return 'Kısa adres gerekli.';
+        return null;
+
+      case 3: // Finansal
+        if (!data.monthlyRent || data.monthlyRent <= 0) return 'Aylık kira tutarı gerekli.';
+        return null;
+
+      default:
+        return null;
+    }
+  };
+
+  const handleNext = () => {
+    const validationError = validateStep(step);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+    setError('');
+    setStep(s => s + 1);
+  };
+
   const handleSubmit = async () => {
+    const validationError = validateStep(step);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
     setLoading(true); setError('');
     try {
       // Tarihleri ISO UTC formatına çevir
@@ -268,9 +366,9 @@ export const PropertyWizard = () => {
       </div>
       {error && <div className="wizard-error">{error}</div>}
       <div className="wizard-footer">
-        {step > 0 && <button className="btn-back" onClick={() => setStep(s => s - 1)}>← Geri</button>}
+        {step > 0 && <button className="btn-back" onClick={() => { setError(''); setStep(s => s - 1); }}>← Geri</button>}
         {step < 3
-          ? <button className="btn-next" onClick={() => setStep(s => s + 1)}>İleri →</button>
+          ? <button className="btn-next" onClick={handleNext}>İleri →</button>
           : <button className="btn-submit" onClick={handleSubmit} disabled={loading}>{loading ? 'Kaydediliyor...' : '✓ Mülkü Kaydet'}</button>
         }
       </div>

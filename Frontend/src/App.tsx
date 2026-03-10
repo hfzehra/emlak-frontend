@@ -7,6 +7,7 @@ import { Properties } from './pages/Properties/Properties';
 import { PropertyDetail } from './pages/Properties/PropertyDetail';
 import { PropertyWizard } from './pages/Properties/Wizard/PropertyWizard';
 import { Persons } from './pages/Persons/Persons';
+import { Archive } from './pages/Archive/Archive';
 import { SuperAdmin } from './pages/SuperAdmin/SuperAdmin';
 import { Login } from './pages/Login/Login';
 import { Register } from './pages/Register/Register';
@@ -27,6 +28,7 @@ function App() {
           <Route path="mulkler/yeni" element={<PropertyWizard />} />
           <Route path="mulkler/:id" element={<PropertyDetail />} />
           <Route path="kisiler" element={<Persons />} />
+          <Route path="arsiv" element={<Archive />} />
           <Route path="super-admin" element={<ProtectedRoute requiredRole="SuperAdmin"><SuperAdmin /></ProtectedRoute>} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />

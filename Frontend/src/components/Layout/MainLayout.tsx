@@ -1,4 +1,4 @@
-﻿import { Outlet, useNavigate } from 'react-router-dom';
+﻿﻿import { Outlet, useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { Sidebar } from './Sidebar';
 import { NotificationBell } from '../Notifications/NotificationBell';
@@ -12,6 +12,7 @@ const BASE_MENU = [
   { path: '/takvim', icon: '/calendar.png', label: 'Takvim' },
   { path: '/mulkler', icon: '/house.png', label: 'Mülkler' },
   { path: '/kisiler', icon: '/person.png', label: 'Kişiler' },
+  { path: '/arsiv', icon: '/archive.png', label: 'Arşiv' },
 ];
 const SUPER_ADMIN_MENU = [
   ...BASE_MENU,

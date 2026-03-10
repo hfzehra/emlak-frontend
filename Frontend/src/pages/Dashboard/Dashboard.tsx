@@ -56,24 +56,6 @@ export const Dashboard = () => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [archivedProperties, setArchivedProperties] = useState<RecentProperty[]>([]);
-  const [showArchive, setShowArchive] = useState(false);
-
-  const loadArchived = async () => {
-    try {
-      const r = await apiClient.get<RecentProperty[]>('/properties/archived');
-      setArchivedProperties(r.data);
-    } catch { /* sessiz hata */ }
-  };
-
-  const handleRestore = async (id: string) => {
-    try {
-      await apiClient.post(`/properties/${id}/restore`, {});
-      loadArchived();
-      const r = await apiClient.get<DashboardStats>('/dashboard');
-      setStats(r.data);
-    } catch { /* sessiz hata */ }
-  };
 
   useEffect(() => {
     apiClient.get<DashboardStats>('/dashboard')
@@ -244,46 +226,6 @@ export const Dashboard = () => {
             </tbody>
           </table>
         </div>
-      </div>
-        <div className="dashboard-section">
-        <div className="section-header">
-          <h2>
-            <button
-              style={{ background: 'none', border: 'none', cursor: 'pointer', fontSize: '1rem', fontWeight: 700, color: '#374151', display: 'flex', alignItems: 'center', gap: '0.5rem' }}
-              onClick={() => { setShowArchive(v => !v); if (!showArchive) loadArchived(); }}
-            >
-              🗄️ Arşiv {showArchive ? '▲' : '▼'}
-            </button>
-          </h2>
-        </div>
-        {showArchive && (
-          <div className="properties-table-wrapper">
-            {archivedProperties.length === 0 ? (
-              <p style={{ padding: '1rem', color: '#9ca3af' }}>Arşivde mülk yok.</p>
-            ) : (
-              <table className="properties-table">
-                <thead>
-                  <tr><th>Emlak No</th><th>Adres</th><th>Sahibi</th><th>Kira</th><th></th></tr>
-                </thead>
-                <tbody>
-                  {archivedProperties.map(p => (
-                    <tr key={p.id}>
-                      <td><span className="property-number">{p.propertyNumber}</span></td>
-                      <td><div className="address-cell"><span className="address-main">{p.district}, {p.city}</span><span className="address-detail">{p.shortAddress}</span></div></td>
-                      <td>{p.ownerName}</td>
-                      <td><span className="rent-amount">{p.monthlyRent.toLocaleString('tr-TR')} ₺</span></td>
-                      <td>
-                        <button className="btn btn-outline" style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem' }} onClick={() => handleRestore(p.id)}>
-                          ↩ Geri Al
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );
