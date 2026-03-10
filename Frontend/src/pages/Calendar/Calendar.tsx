@@ -25,8 +25,8 @@ export const Calendar = () => {
 
   useEffect(() => {
     const now = new Date();
-    const from = new Date(now.getFullYear(), now.getMonth() - 1, 1).toISOString();
-    const to = new Date(now.getFullYear(), now.getMonth() + 3, 0).toISOString();
+    const from = new Date(now.getFullYear(), now.getMonth() - 3, 1).toISOString();
+    const to = new Date(now.getFullYear(), now.getMonth() + 7, 0).toISOString();
     apiClient.get<CalendarEvent[]>(`/calendar/events?from=${from}&to=${to}`)
       .then(r => setEvents(r.data)).catch(() => {});
   }, []);
