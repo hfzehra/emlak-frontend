@@ -78,16 +78,27 @@ export const Properties = () => {
     // Tarih filtresi (createdAt bazında)
     if (dateFrom || dateTo) {
       const createdDate = new Date(p.createdAt);
+      
+      // Debug için log
+      console.log('Filtering:', {
+        property: p.propertyNumber,
+        createdAt: p.createdAt,
+        createdDate: createdDate.toISOString(),
+        createdDateLocal: createdDate.toLocaleDateString('tr-TR'),
+        dateFrom,
+        dateTo
+      });
+
       const createdDateOnly = new Date(createdDate.getFullYear(), createdDate.getMonth(), createdDate.getDate());
       
       if (dateFrom) {
-        const fromDate = new Date(dateFrom);
+        const fromDate = new Date(dateFrom + 'T00:00:00');
         const fromDateOnly = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
         if (createdDateOnly < fromDateOnly) return false;
       }
       
       if (dateTo) {
-        const toDate = new Date(dateTo);
+        const toDate = new Date(dateTo + 'T23:59:59');
         const toDateOnly = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate());
         if (createdDateOnly > toDateOnly) return false;
       }
