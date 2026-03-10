@@ -10,7 +10,8 @@ export const Step4Financial = ({ data, onChange }: Props) => {
 
   const commission = (() => {
     const base = commType === 'percent' ? (monthlyRent * commRate / 100) : commRate;
-    return includeVat ? base * 1.20 : base;
+    const vat = includeVat ? (monthlyRent * 0.20) : 0;
+    return base + vat;
   })();
 
   return (

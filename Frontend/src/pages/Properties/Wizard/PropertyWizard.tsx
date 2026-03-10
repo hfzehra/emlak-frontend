@@ -41,9 +41,11 @@ const Step1Owner = ({ data, onChange }: StepProps) => {
     } catch { setResults([]); }
   };
 
+  const selectedOwner = results.find(r => r.id === data.existingOwnerId);
+
   return (
     <div className="step-content">
-      <h3>Adım 1: Mülk Sahibi</h3>
+      <h3>Adım 1: Mülk Sahibi {selectedOwner && <span style={{ color: '#16a34a', fontWeight: 600 }}>— {selectedOwner.fullName}</span>}</h3>
       <div className="mode-toggle">
         <button className={mode === 'new' ? 'active' : ''} onClick={() => { setMode('new'); onChange({ existingOwnerId: undefined }); }}>Yeni Sahip</button>
         <button className={mode === 'existing' ? 'active' : ''} onClick={() => setMode('existing')}>Mevcut Seç</button>
@@ -186,7 +188,8 @@ const Step4Financial = ({ data, onChange }: StepProps) => {
 
   const commission = (() => {
     const base = commType === 'percent' ? (monthlyRent * commRate / 100) : commRate;
-    return includeVat ? base * 1.20 : base;
+    const vat = includeVat ? (monthlyRent * 0.20) : 0;
+    return base + vat;
   })();
 
   return (

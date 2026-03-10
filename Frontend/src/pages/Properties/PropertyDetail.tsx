@@ -128,7 +128,8 @@ export const PropertyDetail = () => {
     const base = editForm.commissionType === 'percent'
       ? (editForm.monthlyRent * editForm.commissionRate / 100)
       : editForm.commissionRate;
-    return editForm.commissionIncludesVat ? base * 1.20 : base;
+    const vat = editForm.commissionIncludesVat ? (editForm.monthlyRent * 0.20) : 0;
+    return base + vat;
   };
 
   const handleUpdate = async () => {
