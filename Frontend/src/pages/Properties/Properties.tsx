@@ -77,31 +77,29 @@ export const Properties = () => {
 
     // Tarih filtresi (createdAt bazında)
     if (dateFrom || dateTo) {
+      // Backend'den gelen tarih: "2026-03-10T10:36:57.855143"
       const createdDate = new Date(p.createdAt);
-      
-      // Debug için log
-      console.log('Filtering:', {
-        property: p.propertyNumber,
-        createdAt: p.createdAt,
-        createdDate: createdDate.toISOString(),
-        createdDateLocal: createdDate.toLocaleDateString('tr-TR'),
-        dateFrom,
-        dateTo
-      });
-
-      const createdDateOnly = new Date(createdDate.getFullYear(), createdDate.getMonth(), createdDate.getDate());
+      const createdDay = new Date(createdDate.getFullYear(), createdDate.getMonth(), createdDate.getDate());
       
       if (dateFrom) {
-        const fromDate = new Date(dateFrom + 'T00:00:00');
-        const fromDateOnly = new Date(fromDate.getFullYear(), fromDate.getMonth(), fromDate.getDate());
-        if (createdDateOnly < fromDateOnly) return false;
+        const fromParts = dateFrom.split('-'); // "2026-01-01" -> ["2026", "01", "01"]
+        const fromDay = new Date(parseInt(fromParts[0]), parseInt(fromParts[1]) - 1, parseInt(fromParts[2]));
+        if (createdDay < fromDay) {
+          console.log('Filtered out (before dateFrom):', p.propertyNumber, createdDay, fromDay);
+          return false;
+        }
       }
       
       if (dateTo) {
-        const toDate = new Date(dateTo + 'T23:59:59');
-        const toDateOnly = new Date(toDate.getFullYear(), toDate.getMonth(), toDate.getDate());
-        if (createdDateOnly > toDateOnly) return false;
+        const toParts = dateTo.split('-'); // "2026-01-31" -> ["2026", "01", "31"]
+        const toDay = new Date(parseInt(toParts[0]), parseInt(toParts[1]) - 1, parseInt(toParts[2]));
+        if (createdDay > toDay) {
+          console.log('Filtered out (after dateTo):', p.propertyNumber, createdDay, toDay);
+          return false;
+        }
       }
+
+      console.log('Passed filter:', p.propertyNumber, createdDay);
     }
 
     return true;
