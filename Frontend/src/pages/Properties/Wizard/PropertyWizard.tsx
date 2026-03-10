@@ -2,6 +2,7 @@
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../../services/apiClient';
 import { getCities, getDistricts, type City, type District } from '../../../services/turkeyApi';
+import { PhoneInput } from '../../../components/PhoneInput';
 import './PropertyWizard.css';
 
 // ---- Types ----
@@ -51,7 +52,7 @@ const Step1Owner = ({ data, onChange }: StepProps) => {
         <div className="form-grid">
           <div className="form-group"><label>Ad *</label><input value={data.ownerFirstName ?? ''} onChange={e => onChange({ ownerFirstName: e.target.value })} placeholder="Ahmet" /></div>
           <div className="form-group"><label>Soyad *</label><input value={data.ownerLastName ?? ''} onChange={e => onChange({ ownerLastName: e.target.value })} placeholder="Yılmaz" /></div>
-          <div className="form-group"><label>Telefon *</label><input value={data.ownerPhone ?? ''} onChange={e => onChange({ ownerPhone: e.target.value })} placeholder="0532..." /></div>
+          <div className="form-group"><label>Telefon *</label><PhoneInput value={data.ownerPhone ?? ''} onChange={v => onChange({ ownerPhone: v })} /></div>
           <div className="form-group"><label>E-posta</label><input type="email" value={data.ownerEmail ?? ''} onChange={e => onChange({ ownerEmail: e.target.value })} /></div>
         </div>
       ) : (
@@ -83,7 +84,7 @@ const Step2Rental = ({ data, onChange }: StepProps) => (
         <div className="form-grid">
           <div className="form-group"><label>Kiracı Adı *</label><input value={data.tenantFirstName ?? ''} onChange={e => onChange({ tenantFirstName: e.target.value })} /></div>
           <div className="form-group"><label>Kiracı Soyadı *</label><input value={data.tenantLastName ?? ''} onChange={e => onChange({ tenantLastName: e.target.value })} /></div>
-          <div className="form-group"><label>Telefon *</label><input value={data.tenantPhone ?? ''} onChange={e => onChange({ tenantPhone: e.target.value })} /></div>
+          <div className="form-group"><label>Telefon *</label><PhoneInput value={data.tenantPhone ?? ''} onChange={v => onChange({ tenantPhone: v })} /></div>
           <div className="form-group"><label>E-posta</label><input type="email" value={data.tenantEmail ?? ''} onChange={e => onChange({ tenantEmail: e.target.value })} /></div>
         </div>
         <h4 style={{ marginTop: '1.5rem' }}>Sözleşme Bilgileri</h4>
