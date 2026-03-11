@@ -148,6 +148,39 @@
   font-size: 0.78rem;
 }
 
+/* Password Input Wrapper */
+.password-input-wrapper {
+  position: relative;
+}
+
+.password-input-wrapper input {
+  padding-right: 3rem;
+}
+
+.password-toggle {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #64748b;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.password-toggle:hover {
+  color: #334155;
+}
+
+.password-toggle:focus {
+  outline: none;
+}
+
 /* ── Submit button ────────────────────────────────────────── */
 .auth-btn {
   margin-top: 0.25rem;
