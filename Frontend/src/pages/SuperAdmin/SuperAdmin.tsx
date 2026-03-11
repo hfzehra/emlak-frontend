@@ -144,6 +144,7 @@ export const SuperAdmin = () => {
                         <div key={p.id} style={{ border: '1px solid #e5e7eb', borderRadius: 8, padding: '0.875rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', transition: 'box-shadow 0.2s' }} onMouseEnter={(e) => e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.1)'} onMouseLeave={(e) => e.currentTarget.style.boxShadow = 'none'}>
                           <div style={{ flex: 1 }}>
                             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                              <span style={{ fontWeight: 700, color: '#ffffff', fontSize: '0.75rem', background: '#6366f1', padding: '0.25rem 0.65rem', borderRadius: 6 }}>{selectedCompany.name}</span>
                               <span style={{ fontWeight: 700, color: '#6366f1', fontSize: '0.8rem', background: '#ede9fe', padding: '0.15rem 0.5rem', borderRadius: 4 }}>{p.propertyNumber}</span>
                               <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{p.district}, {p.city}</span>
                               <span style={{ padding: '0.15rem 0.5rem', borderRadius: 12, fontSize: '0.7rem', fontWeight: 600, background: p.isRented ? '#dcfce7' : '#f3f4f6', color: p.isRented ? '#16a34a' : '#6b7280' }}>
