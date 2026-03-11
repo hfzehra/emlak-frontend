@@ -28,7 +28,7 @@ interface Property {
   id: string; propertyNumber: string; city: string; district: string;
   shortAddress: string; propertyType: string; roomCount?: number; area?: number;
   isRented: boolean; monthlyRent: number; ownerName: string;
-  tenantName?: string; contractEndDate?: string; createdAt: string;
+  tenantName?: string; contractStartDate?: string; contractEndDate?: string; createdAt: string;
 }
 
 export const Properties = () => {
@@ -75,17 +75,21 @@ export const Properties = () => {
     
     if (!searchMatch) return false;
 
-    // Tarih filtresi (createdAt bazında)
+    // Tarih filtresi (sözleşme başlangıç tarihine göre - sadece kirada olan mülkler için)
     if (dateFrom || dateTo) {
+      // Eğer mülk kirada değilse veya sözleşme tarihi yoksa filtreden geçir
+      if (!p.isRented || !p.contractStartDate) {
+        return false;
+      }
+
       // Backend'den gelen tarih: "2026-03-10T10:36:57.855143"
-      const createdDate = new Date(p.createdAt);
-      const createdDay = new Date(createdDate.getFullYear(), createdDate.getMonth(), createdDate.getDate());
+      const contractDate = new Date(p.contractStartDate);
+      const contractDay = new Date(contractDate.getFullYear(), contractDate.getMonth(), contractDate.getDate());
       
       if (dateFrom) {
         const fromParts = dateFrom.split('-'); // "2026-01-01" -> ["2026", "01", "01"]
         const fromDay = new Date(parseInt(fromParts[0]), parseInt(fromParts[1]) - 1, parseInt(fromParts[2]));
-        if (createdDay < fromDay) {
-          console.log('Filtered out (before dateFrom):', p.propertyNumber, createdDay, fromDay);
+        if (contractDay < fromDay) {
           return false;
         }
       }
@@ -93,13 +97,10 @@ export const Properties = () => {
       if (dateTo) {
         const toParts = dateTo.split('-'); // "2026-01-31" -> ["2026", "01", "31"]
         const toDay = new Date(parseInt(toParts[0]), parseInt(toParts[1]) - 1, parseInt(toParts[2]));
-        if (createdDay > toDay) {
-          console.log('Filtered out (after dateTo):', p.propertyNumber, createdDay, toDay);
+        if (contractDay > toDay) {
           return false;
         }
       }
-
-      console.log('Passed filter:', p.propertyNumber, createdDay);
     }
 
     return true;
@@ -130,12 +131,13 @@ export const Properties = () => {
         </div>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-            <label style={{ fontSize: '0.85rem', color: '#64748b', whiteSpace: 'nowrap' }}>Tarih:</label>
+            <label style={{ fontSize: '0.85rem', color: '#64748b', whiteSpace: 'nowrap' }}>Sözleşme Tarihi:</label>
             <input
               type="date"
               value={dateFrom}
               onChange={e => setDateFrom(e.target.value)}
               style={{ padding: '0.45rem 0.6rem', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.85rem' }}
+              title="Sözleşme başlangıç tarihi (başlangıç)"
             />
             <span style={{ color: '#94a3b8' }}>—</span>
             <input
@@ -143,6 +145,7 @@ export const Properties = () => {
               value={dateTo}
               onChange={e => setDateTo(e.target.value)}
               style={{ padding: '0.45rem 0.6rem', borderRadius: '8px', border: '1.5px solid #e2e8f0', fontSize: '0.85rem' }}
+              title="Sözleşme başlangıç tarihi (bitiş)"
             />
             {(dateFrom || dateTo) && (
               <button
