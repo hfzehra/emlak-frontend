@@ -51,6 +51,13 @@ const LogoutIcon = () => (
   </svg>
 );
 
+const UserIcon = () => (
+  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+    <circle cx="12" cy="7" r="4"/>
+  </svg>
+);
+
 const MenuIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <line x1="3" y1="12" x2="21" y2="12"/>
@@ -147,6 +154,14 @@ export const Sidebar = ({ onLogout, menuItems = DEFAULT_MENU }: SidebarProps) =>
           ))}
         </nav>
         <div className="sidebar-footer">
+          <Link
+            to="/profil"
+            className={`sidebar-link ${location.pathname === '/profil' ? 'active' : ''}`}
+            onClick={handleLinkClick}
+          >
+            <UserIcon />
+            <span className="sidebar-label">Profil</span>
+          </Link>
           <button className="logout-btn" onClick={onLogout}>
             <LogoutIcon />
             <span className="sidebar-label">Çıkış Yap</span>

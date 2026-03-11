@@ -9,6 +9,7 @@ import { PropertyWizard } from './pages/Properties/Wizard/PropertyWizard';
 import { Persons } from './pages/Persons/Persons';
 import { Archive } from './pages/Archive/Archive';
 import { SuperAdmin } from './pages/SuperAdmin/SuperAdmin';
+import { Profile } from './pages/Profile/Profile';
 import { Login } from './pages/Login/Login';
 import { Register } from './pages/Register/Register';
 import { ResetPassword } from './pages/ResetPassword/ResetPassword';
@@ -29,6 +30,7 @@ function App() {
           <Route path="mulkler/:id" element={<PropertyDetail />} />
           <Route path="kisiler" element={<Persons />} />
           <Route path="arsiv" element={<Archive />} />
+          <Route path="profil" element={<Profile />} />
           <Route path="super-admin" element={<ProtectedRoute requiredRole="SuperAdmin"><SuperAdmin /></ProtectedRoute>} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
