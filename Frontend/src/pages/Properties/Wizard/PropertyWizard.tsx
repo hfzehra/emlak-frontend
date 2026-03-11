@@ -186,11 +186,33 @@ const Step4Financial = ({ data, onChange }: StepProps) => {
   const includeVat = data.commissionIncludesVat ?? false;
   const monthlyRent = data.monthlyRent ?? 0;
 
+  // Komisyon Hesaplama: Kira + Ek Komisyon + KDV
   const commission = (() => {
-    const base = commType === 'percent' ? (monthlyRent * commRate / 100) : commRate;
-    const vat = includeVat ? (monthlyRent * 0.20) : 0;
-    return base + vat;
+    // 1. Başlangıç: Emlakçı her zaman kirayı alır
+    let total = monthlyRent;
+    
+    // 2. Ek komisyon varsa ekle (% veya sabit TL)
+    if (commRate > 0) {
+      const extraCommission = commType === 'percent' 
+        ? (monthlyRent * commRate / 100) 
+        : commRate;
+      total += extraCommission;
+    }
+    
+    // 3. KDV eklenecekse kiranın %20'sini ekle
+    if (includeVat) {
+      const vat = monthlyRent * 0.20;
+      total += vat;
+    }
+    
+    return total;
   })();
+
+  // Detay gösterimi için ayrı hesaplamalar
+  const extraCommission = commRate > 0 
+    ? (commType === 'percent' ? (monthlyRent * commRate / 100) : commRate)
+    : 0;
+  const vatAmount = includeVat ? (monthlyRent * 0.20) : 0;
 
   return (
     <div className="step-content">
@@ -218,19 +240,22 @@ const Step4Financial = ({ data, onChange }: StepProps) => {
             <input type="number" value={commRate || ''} onChange={e => onChange({ commissionRate: +e.target.value })} placeholder={commType === 'percent' ? '10' : '5000'} />
           </div>
           <div className="form-group">
-            <label>Hesaplanan</label>
-            <input type="text" readOnly value={commRate > 0 ? `${commission.toLocaleString('tr-TR', { maximumFractionDigits: 2 })} ₺` : '—'} style={{ background: '#f1f5f9', color: '#475569', cursor: 'not-allowed' }} />
+            <label>Ek Komisyon</label>
+            <input type="text" readOnly value={commRate > 0 ? `+${extraCommission.toLocaleString('tr-TR', { maximumFractionDigits: 2 })} ₺` : '—'} style={{ background: '#f1f5f9', color: '#475569', cursor: 'not-allowed' }} />
           </div>
         </div>
         <label className="checkbox-label" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginTop: '0.5rem', cursor: 'pointer' }}>
           <input type="checkbox" checked={includeVat} onChange={e => onChange({ commissionIncludesVat: e.target.checked })} />
-          <span>KDV Dahil (+%20)</span>
+          <span>KDV Dahil (+%20 Kiradan)</span>
         </label>
-        {commRate > 0 && (
-          <div style={{ marginTop: '0.8rem', padding: '0.6rem 0.8rem', background: '#eff6ff', borderRadius: '8px', fontSize: '0.85rem', color: '#1e40af' }}>
-            💰 Kira: <strong>{monthlyRent.toLocaleString('tr-TR')} ₺</strong> + Komisyon: <strong>{commission.toLocaleString('tr-TR', { maximumFractionDigits: 2 })} ₺</strong>
+        <div style={{ marginTop: '0.8rem', padding: '0.8rem 1rem', background: '#eff6ff', borderRadius: '8px', fontSize: '0.85rem', color: '#1e40af', borderLeft: '3px solid #3b82f6' }}>
+          <div style={{ fontWeight: 600, marginBottom: '0.4rem' }}>💰 Toplam Emlakçı Geliri: {commission.toLocaleString('tr-TR', { maximumFractionDigits: 2 })} ₺</div>
+          <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.3rem' }}>
+            <div>• Kira: {monthlyRent.toLocaleString('tr-TR')} ₺</div>
+            {extraCommission > 0 && <div>• Ek Komisyon: +{extraCommission.toLocaleString('tr-TR', { maximumFractionDigits: 2 })} ₺</div>}
+            {vatAmount > 0 && <div>• KDV (%20): +{vatAmount.toLocaleString('tr-TR', { maximumFractionDigits: 2 })} ₺</div>}
           </div>
-        )}
+        </div>
       </div>
 
       <div className="wizard-summary" style={{ marginTop: '1.2rem' }}>
