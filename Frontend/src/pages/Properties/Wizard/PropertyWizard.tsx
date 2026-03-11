@@ -1,4 +1,4 @@
-﻿﻿import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../../services/apiClient';
 import { getCities, getDistricts, type City, type District } from '../../../services/turkeyApi';
@@ -448,7 +448,7 @@ export const PropertyWizard = () => {
       // Validation hatalarını göster (ASP.NET Core format: { "FieldName": ["error1", "error2"] })
       if (errorData?.errors && typeof errorData.errors === 'object') {
         const validationErrors = Object.entries(errorData.errors)
-          .map(([field, messages]) => {
+          .map(([, messages]) => {
             const msgArray = Array.isArray(messages) ? messages : [messages];
             return `• ${msgArray.join(', ')}`;
           })
