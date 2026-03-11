@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react';
+﻿﻿import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../../services/apiClient';
 import { getCities, getDistricts, type City, type District } from '../../../services/turkeyApi';
@@ -289,17 +289,61 @@ export const PropertyWizard = () => {
           return null; // Mevcut sahip seçildi, OK
         }
         if (!data.ownerFirstName?.trim()) return 'Sahip adı gerekli.';
+        if (data.ownerFirstName.trim().length < 2) return 'Sahip adı en az 2 karakter olmalı.';
         if (!data.ownerLastName?.trim()) return 'Sahip soyadı gerekli.';
+        if (data.ownerLastName.trim().length < 2) return 'Sahip soyadı en az 2 karakter olmalı.';
         if (!data.ownerPhone?.trim()) return 'Sahip telefonu gerekli.';
+        
+        // Telefon validasyonu
+        const ownerCleanPhone = data.ownerPhone.replace(/\D/g, '');
+        if (ownerCleanPhone.length < 10 || ownerCleanPhone.length > 11) {
+          return 'Telefon numarası 10-11 haneli olmalı.';
+        }
+        
+        // Email validasyonu (opsiyonel)
+        if (data.ownerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.ownerEmail)) {
+          return 'Geçersiz e-posta formatı.';
+        }
         return null;
 
       case 1: // Kiralık mı?
         if (data.isRented) {
-          if (!data.tenantFirstName?.trim()) return 'Kiracı adı gerekli.';
-          if (!data.tenantLastName?.trim()) return 'Kiracı soyadı gerekli.';
-          if (!data.tenantPhone?.trim()) return 'Kiracı telefonu gerekli.';
+          if (!data.existingTenantId) {
+            if (!data.tenantFirstName?.trim()) return 'Kiracı adı gerekli.';
+            if (data.tenantFirstName.trim().length < 2) return 'Kiracı adı en az 2 karakter olmalı.';
+            if (!data.tenantLastName?.trim()) return 'Kiracı soyadı gerekli.';
+            if (data.tenantLastName.trim().length < 2) return 'Kiracı soyadı en az 2 karakter olmalı.';
+            if (!data.tenantPhone?.trim()) return 'Kiracı telefonu gerekli.';
+            
+            // Telefon validasyonu
+            const tenantCleanPhone = data.tenantPhone.replace(/\D/g, '');
+            if (tenantCleanPhone.length < 10 || tenantCleanPhone.length > 11) {
+              return 'Telefon numarası 10-11 haneli olmalı.';
+            }
+            
+            // Email validasyonu (opsiyonel)
+            if (data.tenantEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.tenantEmail)) {
+              return 'Geçersiz e-posta formatı.';
+            }
+          }
+          
           if (!data.contractStartDate) return 'Sözleşme başlangıç tarihi gerekli.';
           if (!data.contractEndDate) return 'Sözleşme bitiş tarihi gerekli.';
+          
+          // Tarih mantık kontrolü
+          const startDate = new Date(data.contractStartDate);
+          const endDate = new Date(data.contractEndDate);
+          
+          if (startDate >= endDate) {
+            return 'Sözleşme bitiş tarihi başlangıç tarihinden sonra olmalı.';
+          }
+          
+          // Minimum 1 ay kontrolü
+          const diffTime = endDate.getTime() - startDate.getTime();
+          const diffDays = diffTime / (1000 * 3600 * 24);
+          if (diffDays < 30) {
+            return 'Sözleşme süresi en az 1 ay olmalı.';
+          }
         }
         return null;
 
@@ -307,10 +351,35 @@ export const PropertyWizard = () => {
         if (!data.city?.trim()) return 'Şehir seçimi gerekli.';
         if (!data.district?.trim()) return 'İlçe seçimi gerekli.';
         if (!data.shortAddress?.trim()) return 'Kısa adres gerekli.';
+        if (data.shortAddress.trim().length < 10) return 'Adres en az 10 karakter olmalı.';
+        
+        // Oda sayısı ve alan kontrolü
+        if (data.roomCount && (data.roomCount < 0 || data.roomCount > 20)) {
+          return 'Oda sayısı 0-20 arasında olmalı.';
+        }
+        if (data.area && (data.area < 1 || data.area > 100000)) {
+          return 'Alan 1-100.000 m² arasında olmalı.';
+        }
         return null;
 
       case 3: // Finansal
-        if (!data.monthlyRent || data.monthlyRent <= 0) return 'Aylık kira tutarı gerekli.';
+        if (!data.monthlyRent || data.monthlyRent <= 0) return 'Aylık kira tutarı 0\'dan büyük olmalı.';
+        if (data.monthlyRent > 10000000) return 'Kira tutarı 10.000.000 TL\'den fazla olamaz.';
+        
+        // Kira vade günü kontrolü
+        if (data.rentDueDay && (data.rentDueDay < 1 || data.rentDueDay > 28)) {
+          return 'Kira vade günü 1-28 arasında olmalı.';
+        }
+        
+        // Komisyon kontrolü
+        if (data.commissionRate && data.commissionRate > 0) {
+          if (data.commissionType === 'percent' && data.commissionRate > 100) {
+            return 'Komisyon yüzdesi 100\'den fazla olamaz.';
+          }
+          if (data.commissionType === 'fixed' && data.commissionRate > 10000000) {
+            return 'Komisyon tutarı 10.000.000 TL\'den fazla olamaz.';
+          }
+        }
         return null;
 
       default:
@@ -348,26 +417,43 @@ export const PropertyWizard = () => {
       console.log('Başarılı:', response.data);
       navigate('/mulkler');
     } catch (e: unknown) {
-      const err = e as { response?: { status?: number; data?: { title?: string; errors?: Record<string, string[]>; detail?: string; innerDetail?: string } } };
+      const err = e as { response?: { status?: number; data?: { title?: string; errors?: Record<string, string[]>; detail?: string; innerDetail?: string; message?: string } } };
       console.error('Wizard hatası:', err.response?.data);
       
       const status = err.response?.status;
       const errorData = err.response?.data;
       
+      // Özel validation hataları (bizim custom exception'larımız)
+      if (errorData?.message) {
+        setError(errorData.message);
+        return;
+      }
+      
+      // Detail mesajı varsa (ValidationException'dan gelir)
+      if (errorData?.detail) {
+        setError(errorData.detail);
+        return;
+      }
+      
       // 500 sunucu hatası için özel mesaj
       if (status && status >= 500) {
-        setError('Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.');
+        if (errorData?.innerDetail?.includes('overlapping') || errorData?.detail?.includes('tarihleri arasında')) {
+          setError('⚠️ Bu mülk seçilen tarihler arasında zaten kiralanmış. Lütfen farklı bir mülk seçin veya tarih aralığını değiştirin.');
+        } else {
+          setError('Sunucu hatası oluştu. Lütfen daha sonra tekrar deneyin.');
+        }
         return;
       }
       
       // Validation hatalarını göster (ASP.NET Core format: { "FieldName": ["error1", "error2"] })
       if (errorData?.errors && typeof errorData.errors === 'object') {
         const validationErrors = Object.entries(errorData.errors)
-          .map(([field, messages]) => `${field}: ${Array.isArray(messages) ? messages.join(', ') : messages}`)
+          .map(([field, messages]) => {
+            const msgArray = Array.isArray(messages) ? messages : [messages];
+            return `• ${msgArray.join(', ')}`;
+          })
           .join('\n');
         setError(`Doğrulama Hatası:\n${validationErrors}`);
-      } else if (errorData?.detail) {
-        setError(errorData.detail);
       } else if (errorData?.title) {
         setError(errorData.title);
       } else {
