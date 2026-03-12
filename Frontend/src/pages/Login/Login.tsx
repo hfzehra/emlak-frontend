@@ -38,20 +38,32 @@ export const Login = () => {
   useEffect(() => {
     if (error) {
       setLocalError(error);
-      // 5 saniye sonra error'u temizle
+      // 10 saniye sonra error'u temizle
       const timer = setTimeout(() => {
         setLocalError(null);
         dispatch(clearError());
-      }, 5000);
+      }, 10000);
       return () => clearTimeout(timer);
     }
   }, [error, dispatch]);
 
   const onSubmit = async (data: LoginForm) => {
-    setLocalError(null); // Önceki hatayı temizle
-    const result = await dispatch(login(data));
-    if (login.fulfilled.match(result)) {
-      navigate('/');
+    // Önceki hatayı temizle
+    setLocalError(null);
+    dispatch(clearError());
+    
+    try {
+      const result = await dispatch(login(data));
+      
+      // Başarılı giriş kontrolü
+      if (login.fulfilled.match(result)) {
+        navigate('/');
+      } else if (login.rejected.match(result)) {
+        // Hata durumunda hiçbir şey yapma, error Redux'tan gelecek
+        console.log('Login rejected:', result.payload);
+      }
+    } catch (err) {
+      console.error('Login submit error:', err);
     }
   };
 

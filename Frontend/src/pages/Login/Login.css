@@ -207,13 +207,27 @@
 
 /* ── Alert ────────────────────────────────────────────────── */
 .auth-alert {
-  padding: 0.75rem 1rem;
+  padding: 0.875rem 1.125rem;
   border-radius: 10px;
-  margin-bottom: 0.75rem;
-  font-size: 0.875rem;
-  background: rgba(239, 68, 68, 0.18);
-  border: 1px solid rgba(239, 68, 68, 0.45);
-  color: #fca5a5;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  background: rgba(239, 68, 68, 0.25);
+  border: 1.5px solid rgba(239, 68, 68, 0.6);
+  color: #fee;
+  animation: slideDown 0.3s ease-out;
+  line-height: 1.4;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* ── Footer link ──────────────────────────────────────────── */
