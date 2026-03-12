@@ -1,34 +1,36 @@
-﻿﻿import { useEffect, useState } from 'react';
+﻿﻿﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../services/apiClient';
 import './Dashboard.css';
 
-// SVG Icons
+// SVG Icons - Modern & Professional
 const BuildingIcon = () => (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="4" y="2" width="16" height="20" rx="2" ry="2"/>
-    <path d="M9 22v-4h6v4"/>
-    <path d="M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01"/>
+    <rect x="3" y="3" width="18" height="18" rx="2"/>
+    <path d="M7 7h.01M7 12h.01M7 17h.01M12 7h.01M12 12h.01M12 17h.01M17 7h.01M17 12h.01M17 17h.01"/>
   </svg>
 );
 
 const HomeIcon = () => (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-    <polyline points="9 22 9 12 15 12 15 22"/>
+    <path d="M9 22V12h6v10"/>
   </svg>
 );
 
-const KeyIcon = () => (
+const EmptyIcon = () => (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+    <rect x="2" y="7" width="20" height="15" rx="2" ry="2"/>
+    <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>
+    <circle cx="8" cy="14" r="1"/>
   </svg>
 );
 
-const CheckCircleIcon = () => (
+const MoneyIcon = () => (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-    <polyline points="22 4 12 14.01 9 11.01"/>
+    <circle cx="12" cy="12" r="10"/>
+    <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/>
+    <path d="M12 18V6"/>
   </svg>
 );
 
@@ -101,14 +103,14 @@ export const Dashboard = () => {
     },
     { 
       key: 'vacant', 
-      icon: <KeyIcon />, 
+      icon: <EmptyIcon />, 
       label: 'Boş', 
       value: stats?.vacantProperties ?? 0, 
       type: 'accent' 
     },
     { 
       key: 'commission', 
-      icon: <CheckCircleIcon />, 
+      icon: <MoneyIcon />, 
       label: 'Toplam Geliriniz', 
       value: `${(stats?.totalAllTimeCommission ?? 0).toLocaleString('tr-TR')} ₺`, 
       type: 'warning' 

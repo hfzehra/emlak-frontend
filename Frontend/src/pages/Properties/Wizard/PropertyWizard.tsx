@@ -224,14 +224,35 @@ const Step4Financial = ({ data, onChange }: StepProps) => {
             type="number" 
             min="1000" 
             step="100" 
-            value={data.monthlyRent ?? ''} 
-            onChange={e => onChange({ monthlyRent: +e.target.value })} 
+            value={data.monthlyRent && data.monthlyRent > 0 ? data.monthlyRent : ''} 
+            onChange={e => {
+              const value = e.target.value;
+              onChange({ monthlyRent: value ? +value : 0 });
+            }}
+            onKeyPress={(e) => {
+              // Sadece rakam girişine izin ver
+              if (!/[0-9]/.test(e.key)) {
+                e.preventDefault();
+              }
+            }}
             placeholder="Minimum 1.000 TL" 
           />
         </div>
         <div className="form-group">
           <label>Kira Vadesi (Ayın Kaçı)</label>
-          <input type="number" min="1" max="31" value={data.rentDueDay ?? 1} onChange={e => onChange({ rentDueDay: +e.target.value })} />
+          <input 
+            type="number" 
+            min="1" 
+            max="31" 
+            value={data.rentDueDay ?? 1} 
+            onChange={e => onChange({ rentDueDay: +e.target.value })} 
+            onKeyPress={(e) => {
+              // Sadece rakam girişine izin ver
+              if (!/[0-9]/.test(e.key)) {
+                e.preventDefault();
+              }
+            }}
+          />
         </div>
       </div>
 
@@ -244,7 +265,21 @@ const Step4Financial = ({ data, onChange }: StepProps) => {
         <div className="form-grid">
           <div className="form-group">
             <label>{commType === 'percent' ? 'Oran (%)' : 'Tutar (₺)'}</label>
-            <input type="number" value={commRate || ''} onChange={e => onChange({ commissionRate: +e.target.value })} placeholder={commType === 'percent' ? '10' : '5000'} />
+            <input 
+              type="number" 
+              value={commRate && commRate > 0 ? commRate : ''} 
+              onChange={e => {
+                const value = e.target.value;
+                onChange({ commissionRate: value ? +value : 0 });
+              }}
+              onKeyPress={(e) => {
+                // Sadece rakam ve nokta girişine izin ver
+                if (!/[0-9.]/.test(e.key)) {
+                  e.preventDefault();
+                }
+              }}
+              placeholder={commType === 'percent' ? '10' : '5000'} 
+            />
           </div>
           <div className="form-group">
             <label>Ek Komisyon</label>
