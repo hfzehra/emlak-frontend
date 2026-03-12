@@ -92,28 +92,35 @@ export const Dashboard = () => {
       icon: <BuildingIcon />, 
       label: 'Toplam Mülk', 
       value: stats?.totalProperties ?? 0, 
-      type: 'primary' 
+      type: 'primary',
+      clickable: true,
+      path: '/mulkler'
     },
     { 
       key: 'rented', 
       icon: <HomeIcon />, 
       label: 'Kirada', 
       value: stats?.rentedProperties ?? 0, 
-      type: 'success' 
+      type: 'success',
+      clickable: true,
+      path: '/mulkler'
     },
     { 
       key: 'vacant', 
       icon: <EmptyIcon />, 
       label: 'Boş', 
       value: stats?.vacantProperties ?? 0, 
-      type: 'accent' 
+      type: 'accent',
+      clickable: true,
+      path: '/mulkler'
     },
     { 
       key: 'commission', 
       icon: <MoneyIcon />, 
       label: 'Toplam Geliriniz', 
       value: `${(stats?.totalAllTimeCommission ?? 0).toLocaleString('tr-TR')} ₺`, 
-      type: 'warning' 
+      type: 'warning',
+      clickable: false
     },
   ];
 
@@ -126,7 +133,12 @@ export const Dashboard = () => {
       
       <div className="stats-grid">
         {statsCards.map(card => (
-          <div key={card.key} className={`stat-card stat-card--${card.type}`}>
+          <div 
+            key={card.key} 
+            className={`stat-card stat-card--${card.type} ${card.clickable ? 'stat-card--clickable' : ''}`}
+            onClick={() => card.clickable && card.path && navigate(card.path)}
+            style={{ cursor: card.clickable ? 'pointer' : 'default' }}
+          >
             <div className="stat-card__icon">
               {card.icon}
             </div>

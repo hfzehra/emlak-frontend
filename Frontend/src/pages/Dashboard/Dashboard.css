@@ -1,4 +1,4 @@
-﻿﻿/* Dashboard Styles - Lapis Velvet Evening Theme */
+﻿﻿﻿/* Dashboard Styles - Lapis Velvet Evening Theme */
 
 /* =========================================================
    Dashboard – Mobile First
@@ -101,6 +101,39 @@
 .stat-card:hover {
   transform: translateY(-2px);
   box-shadow: var(--shadow-lg);
+}
+
+/* Clickable Cards */
+.stat-card--clickable {
+  cursor: pointer;
+  position: relative;
+}
+
+.stat-card--clickable::after {
+  content: '→';
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.25rem;
+  font-weight: 700;
+  opacity: 0;
+  transition: all var(--transition-base);
+  color: currentColor;
+}
+
+.stat-card--clickable:hover::after {
+  opacity: 0.5;
+  right: 0.5rem;
+}
+
+.stat-card--clickable:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-xl);
+}
+
+.stat-card--clickable:active {
+  transform: translateY(-1px);
 }
 
 .stat-card__icon {
