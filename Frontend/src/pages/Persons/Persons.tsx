@@ -1,4 +1,4 @@
-﻿﻿import { useEffect, useState } from 'react';
+﻿﻿﻿import { useEffect, useState } from 'react';
 import { apiClient } from '../../services/apiClient';
 import './Persons.css';
 
@@ -184,11 +184,15 @@ export const Persons = () => {
                   <input
                     type="tel"
                     value={form.phone}
-                    onChange={e => setForm({ ...form, phone: e.target.value })}
-                    placeholder="0532 123 45 67"
-                    maxLength={15}
+                    onChange={e => {
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      setForm({ ...form, phone: value });
+                    }}
+                    placeholder="5321234567"
+                    maxLength={10}
                     required
                   />
+                  <small style={{ color: '#64748b', fontSize: '0.85rem' }}>Başında 0 olmadan 10 hane</small>
                 </div>
                 <div className="form-group">
                   <label>E-posta</label>

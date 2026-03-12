@@ -220,11 +220,18 @@ const Step4Financial = ({ data, onChange }: StepProps) => {
       <div className="form-grid">
         <div className="form-group">
           <label>Aylık Kira (₺) *</label>
-          <input type="number" value={data.monthlyRent ?? ''} onChange={e => onChange({ monthlyRent: +e.target.value })} placeholder="5000" />
+          <input 
+            type="number" 
+            min="1000" 
+            step="100" 
+            value={data.monthlyRent ?? ''} 
+            onChange={e => onChange({ monthlyRent: +e.target.value })} 
+            placeholder="Minimum 1.000 TL" 
+          />
         </div>
         <div className="form-group">
           <label>Kira Vadesi (Ayın Kaçı)</label>
-          <input type="number" min="1" max="28" value={data.rentDueDay ?? 1} onChange={e => onChange({ rentDueDay: +e.target.value })} />
+          <input type="number" min="1" max="31" value={data.rentDueDay ?? 1} onChange={e => onChange({ rentDueDay: +e.target.value })} />
         </div>
       </div>
 
@@ -294,15 +301,18 @@ export const PropertyWizard = () => {
         if (data.ownerLastName.trim().length < 2) return 'Sahip soyadı en az 2 karakter olmalı.';
         if (!data.ownerPhone?.trim()) return 'Sahip telefonu gerekli.';
         
-        // Telefon validasyonu
+        // Telefon validasyonu - Tam 10 hane, başında 0 yok
         const ownerCleanPhone = data.ownerPhone.replace(/\D/g, '');
-        if (ownerCleanPhone.length < 10 || ownerCleanPhone.length > 11) {
-          return 'Telefon numarası 10-11 haneli olmalı.';
+        if (ownerCleanPhone.length !== 10) {
+          return 'Telefon numarası başında 0 olmadan tam olarak 10 haneli olmalı. Örnek: 5321234567';
+        }
+        if (!ownerCleanPhone.startsWith('5')) {
+          return 'Telefon numarası 5 ile başlamalıdır.';
         }
         
-        // Email validasyonu (opsiyonel)
-        if (data.ownerEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.ownerEmail)) {
-          return 'Geçersiz e-posta formatı.';
+        // Email validasyonu (opsiyonel ama @ zorunlu)
+        if (data.ownerEmail && !data.ownerEmail.includes('@')) {
+          return 'E-posta adresi @ karakteri içermelidir.';
         }
         return null;
 
@@ -315,15 +325,18 @@ export const PropertyWizard = () => {
             if (data.tenantLastName.trim().length < 2) return 'Kiracı soyadı en az 2 karakter olmalı.';
             if (!data.tenantPhone?.trim()) return 'Kiracı telefonu gerekli.';
             
-            // Telefon validasyonu
+            // Telefon validasyonu - Tam 10 hane, başında 0 yok
             const tenantCleanPhone = data.tenantPhone.replace(/\D/g, '');
-            if (tenantCleanPhone.length < 10 || tenantCleanPhone.length > 11) {
-              return 'Telefon numarası 10-11 haneli olmalı.';
+            if (tenantCleanPhone.length !== 10) {
+              return 'Telefon numarası başında 0 olmadan tam olarak 10 haneli olmalı. Örnek: 5321234567';
+            }
+            if (!tenantCleanPhone.startsWith('5')) {
+              return 'Telefon numarası 5 ile başlamalıdır.';
             }
             
-            // Email validasyonu (opsiyonel)
-            if (data.tenantEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.tenantEmail)) {
-              return 'Geçersiz e-posta formatı.';
+            // Email validasyonu (opsiyonel ama @ zorunlu)
+            if (data.tenantEmail && !data.tenantEmail.includes('@')) {
+              return 'E-posta adresi @ karakteri içermelidir.';
             }
           }
           
@@ -363,12 +376,14 @@ export const PropertyWizard = () => {
         return null;
 
       case 3: // Finansal
-        if (!data.monthlyRent || data.monthlyRent <= 0) return 'Aylık kira tutarı 0\'dan büyük olmalı.';
+        if (!data.monthlyRent || data.monthlyRent < 1000) {
+          return 'Aylık kira tutarı en az 1.000 TL olmalıdır.';
+        }
         if (data.monthlyRent > 10000000) return 'Kira tutarı 10.000.000 TL\'den fazla olamaz.';
         
-        // Kira vade günü kontrolü
-        if (data.rentDueDay && (data.rentDueDay < 1 || data.rentDueDay > 28)) {
-          return 'Kira vade günü 1-28 arasında olmalı.';
+        // Kira vade günü kontrolü - 1 ile 31 arası
+        if (data.rentDueDay && (data.rentDueDay < 1 || data.rentDueDay > 31)) {
+          return 'Kira vade günü 1 ile 31 arasında olmalıdır.';
         }
         
         // Komisyon kontrolü

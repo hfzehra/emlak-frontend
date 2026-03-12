@@ -74,7 +74,13 @@ export const Login = () => {
             <input
               type="email"
               placeholder="username@gmail.com"
-              {...register('email', { required: 'E-posta zorunludur' })}
+              {...register('email', { 
+                required: 'E-posta zorunludur',
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: 'E-posta adresi @ karakteri içermelidir'
+                }
+              })}
             />
             {errors.email && <span className="auth-field-error">{errors.email.message}</span>}
           </div>

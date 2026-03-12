@@ -121,7 +121,13 @@ export const Register = () => {
             <input
               type="email"
               placeholder="ahmet@abc.com"
-              {...register('email', { required: 'Zorunlu' })}
+              {...register('email', { 
+                required: 'Zorunlu',
+                pattern: {
+                  value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                  message: 'E-posta adresi @ karakteri içermelidir'
+                }
+              })}
             />
             {errors.email && <span className="auth-field-error">{errors.email.message}</span>}
           </div>
