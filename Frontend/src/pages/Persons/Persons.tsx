@@ -185,14 +185,14 @@ export const Persons = () => {
                     type="tel"
                     value={form.phone}
                     onChange={e => {
-                      const value = e.target.value.replace(/\D/g, '').slice(0, 10);
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 11);
                       setForm({ ...form, phone: value });
                     }}
-                    placeholder="5321234567"
-                    maxLength={10}
+                    placeholder="05321234567"
+                    maxLength={11}
                     required
                   />
-                  <small style={{ color: '#64748b', fontSize: '0.85rem' }}>Başında 0 olmadan 10 hane</small>
+                  <small style={{ color: '#64748b', fontSize: '0.85rem' }}>Format: 0(5XX) XXX XX XX</small>
                 </div>
                 <div className="form-group">
                   <label>E-posta</label>

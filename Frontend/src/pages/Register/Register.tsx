@@ -90,7 +90,23 @@ export const Register = () => {
             </div>
             <div className="auth-field">
               <label>Şirket Telefon</label>
-              <input placeholder="0212 000 00 00" {...register('companyPhone')} />
+              <input 
+                type="tel"
+                placeholder="0(5XX) XXX XX XX"
+                maxLength={11}
+                {...register('companyPhone', {
+                  pattern: {
+                    value: /^0[0-9]{10}$/,
+                    message: 'Telefon numarası 0 ile başlayarak tam 11 haneli olmalı'
+                  }
+                })}
+                onKeyPress={(e) => {
+                  if (!/[0-9]/.test(e.key)) {
+                    e.preventDefault();
+                  }
+                }}
+              />
+              {errors.companyPhone && <span className="auth-field-error">{errors.companyPhone.message}</span>}
             </div>
           </div>
 

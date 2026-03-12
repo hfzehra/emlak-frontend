@@ -325,13 +325,16 @@ export const PropertyWizard = () => {
             if (data.tenantLastName.trim().length < 2) return 'Kiracı soyadı en az 2 karakter olmalı.';
             if (!data.tenantPhone?.trim()) return 'Kiracı telefonu gerekli.';
             
-            // Telefon validasyonu - Tam 10 hane, başında 0 yok
+            // Telefon validasyonu - Tam 11 hane, 0 ile başlar
             const tenantCleanPhone = data.tenantPhone.replace(/\D/g, '');
-            if (tenantCleanPhone.length !== 10) {
-              return 'Telefon numarası başında 0 olmadan tam olarak 10 haneli olmalı. Örnek: 5321234567';
+            if (tenantCleanPhone.length !== 11) {
+              return 'Telefon numarası tam olarak 11 haneli olmalı. Format: 0(5XX) XXX XX XX';
             }
-            if (!tenantCleanPhone.startsWith('5')) {
-              return 'Telefon numarası 5 ile başlamalıdır.';
+            if (!tenantCleanPhone.startsWith('0')) {
+              return 'Telefon numarası 0 ile başlamalıdır.';
+            }
+            if (tenantCleanPhone[1] !== '5') {
+              return 'Telefon numarası 05 ile başlamalıdır (mobil telefon).';
             }
             
             // Email validasyonu (opsiyonel ama @ zorunlu)
