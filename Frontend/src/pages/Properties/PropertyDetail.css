@@ -1,4 +1,4 @@
-﻿﻿/* Property Detail Styles */
+﻿﻿﻿/* Property Detail Styles */
 
 .property-detail {
   max-width: 1000px;
@@ -255,140 +255,365 @@
 .edit-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
   z-index: 1000;
-  padding: var(--spacing-md);
+  padding: 1rem;
+  overflow-y: auto;
 }
 
 .edit-modal {
   background: var(--bg-secondary);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-xl);
+  padding: 1.5rem;
   width: 100%;
-  max-width: 480px;
+  max-width: 540px;
   box-shadow: var(--shadow-xl);
+  margin: auto;
+  max-height: 90vh;
+  overflow-y: auto;
+  position: relative;
+}
+
+/* Scrollbar styling for modal */
+.edit-modal::-webkit-scrollbar {
+  width: 8px;
+}
+
+.edit-modal::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 4px;
+}
+
+.edit-modal::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+.edit-modal::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
 }
 
 .edit-modal h2 {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 600;
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: 1.25rem;
   color: var(--text-primary);
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--border-light);
 }
 
 .edit-form {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-md);
+  gap: 1rem;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-md);
-}
-
-@media (max-width: 480px) {
-  .form-row {
-    grid-template-columns: 1fr;
-  }
+  gap: 1rem;
 }
 
 .form-group {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-xs);
+  gap: 0.4rem;
 }
 
 .form-group label {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
 
 .form-hint {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
-  margin-top: 0.25rem;
+  margin-top: 0.2rem;
 }
 
 .form-hint-box {
-  padding: var(--spacing-sm) var(--spacing-md);
-  background: #e8f4fd;
-  border-left: 3px solid var(--color-accent);
+  padding: 0.75rem 1rem;
+  background: #eff6ff;
+  border-left: 3px solid var(--color-primary);
   border-radius: var(--radius-sm);
-  margin-bottom: var(--spacing-md);
+  margin-bottom: 0.75rem;
 }
 
 .form-hint-box small {
-  font-size: 0.85rem;
-  color: var(--color-accent-dark);
+  font-size: 0.8rem;
+  color: var(--color-primary);
   font-weight: 500;
 }
 
 .checkbox-group {
-  padding: var(--spacing-md);
+  padding: 0.875rem;
   background: var(--bg-tertiary);
   border-radius: var(--radius-md);
-  border: 2px solid var(--border-light);
+  border: 1.5px solid var(--border-light);
 }
 
 .checkbox-label {
   display: flex;
   align-items: center;
-  gap: var(--spacing-sm);
+  gap: 0.5rem;
   cursor: pointer;
   font-weight: 500;
   color: var(--text-primary);
+  font-size: 0.9rem;
 }
 
 .checkbox-label input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
+  width: 18px;
+  height: 18px;
   cursor: pointer;
   accent-color: var(--color-primary);
 }
 
-.form-group input {
-  padding: 0.75rem 1rem;
-  border: 2px solid var(--border-light);
+.form-group input,
+.form-group select {
+  padding: 0.65rem 0.875rem;
+  border: 1.5px solid var(--border-light);
   border-radius: var(--radius-md);
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   transition: border-color var(--transition-fast);
   background: var(--bg-primary);
 }
 
-.form-group input:focus {
+.form-group input:focus,
+.form-group select:focus {
   outline: none;
-  border-color: var(--color-accent);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(30, 58, 95, 0.1);
+}
+
+.form-group input:disabled,
+.form-group input[readonly] {
+  background: #f1f5f9;
+  color: #64748b;
+  cursor: not-allowed;
 }
 
 .form-actions {
   display: flex;
   justify-content: flex-end;
-  gap: var(--spacing-sm);
-  margin-top: var(--spacing-md);
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-light);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .property-detail {
-    padding: var(--spacing-md);
+    padding: 1rem;
+  }
+  
+  .property-detail__header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .header-actions .btn {
+    flex: 1;
   }
   
   .property-info-card {
-    padding: var(--spacing-lg);
+    padding: 1.25rem;
   }
   
   .property-title {
-    font-size: 1.5rem;
+    font-size: 1.35rem;
   }
   
   .property-stats {
     grid-template-columns: repeat(2, 1fr);
+    gap: 0.875rem;
+  }
+  
+  .property-sections {
+    grid-template-columns: 1fr;
+  }
+  
+  .edit-modal-overlay {
+    padding: 0.5rem;
+    align-items: flex-start;
+  }
+  
+  .edit-modal {
+    padding: 1.25rem;
+    max-width: 100%;
+    max-height: 95vh;
+    margin-top: 0.5rem;
+  }
+  
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 0.875rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .property-detail {
+    padding: 0.75rem;
+  }
+  
+  .property-detail__header {
+    gap: 0.75rem;
+  }
+  
+  .btn-back {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.85rem;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  .header-actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .property-info-card {
+    padding: 1rem;
+    border-radius: 10px;
+  }
+  
+  .property-info-header {
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+  
+  .property-number-badge {
+    font-size: 0.75rem;
+    padding: 0.35rem 0.65rem;
+  }
+  
+  .property-title {
+    font-size: 1.15rem;
+    line-height: 1.3;
+  }
+  
+  .property-address {
+    font-size: 0.85rem;
+  }
+  
+  .property-stats {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .stat-label {
+    font-size: 0.7rem;
+  }
+  
+  .stat-value {
+    font-size: 0.95rem;
+  }
+  
+  .stat-value--primary {
+    font-size: 1.1rem;
+  }
+  
+  .info-section {
+    padding: 1rem;
+  }
+  
+  .section-title h3 {
+    font-size: 0.9rem;
+  }
+  
+  .info-content,
+  .info-grid {
+    padding-left: 0.875rem;
+  }
+  
+  .info-value {
+    font-size: 0.9rem;
+  }
+  
+  /* Modal mobile optimizations */
+  .edit-modal-overlay {
+    padding: 0;
+    align-items: stretch;
+  }
+  
+  .edit-modal {
+    padding: 1rem;
+    border-radius: 0;
+    max-height: 100vh;
+    height: 100vh;
+    margin: 0;
+  }
+  
+  .edit-modal h2 {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    padding-bottom: 0.65rem;
+  }
+  
+  .edit-form {
+    gap: 0.875rem;
+  }
+  
+  .form-row {
+    gap: 0.75rem;
+  }
+  
+  .form-group label {
+    font-size: 0.75rem;
+  }
+  
+  .form-group input,
+  .form-group select {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.875rem;
+  }
+  
+  .checkbox-group {
+    padding: 0.75rem;
+  }
+  
+  .checkbox-label {
+    font-size: 0.85rem;
+  }
+  
+  .form-actions {
+    flex-direction: column-reverse;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    position: sticky;
+    bottom: 0;
+    background: var(--bg-secondary);
+    margin-left: -1rem;
+    margin-right: -1rem;
+    margin-bottom: -1rem;
+    padding: 1rem;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
+  }
+  
+  .form-actions .btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+  }
+  
+  .btn {
+    padding: 0.6rem 0.95rem;
+    font-size: 0.825rem;
   }
 }
 
