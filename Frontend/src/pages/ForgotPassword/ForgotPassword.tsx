@@ -19,19 +19,39 @@ export const ForgotPassword = () => {
     setError(null);
     
     try {
-      await apiClient.post('/auth/forgot-password', { email: data.email });
+      // 30 saniye timeout ile istek gönder
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 30000);
+      
+      await apiClient.post('/auth/forgot-password', 
+        { email: data.email },
+        { signal: controller.signal }
+      );
+      
+      clearTimeout(timeoutId);
       setSuccess(true);
     } catch (err: any) {
       console.error('Forgot password error:', err);
+      
+      // Timeout hatası
+      if (err.name === 'CanceledError' || err.code === 'ECONNABORTED') {
+        setError('⏱️ İstek zaman aşımına uğradı. Email servisi şu an yanıt vermiyor. Lütfen daha sonra tekrar deneyin veya sistem yöneticisi ile iletişime geçin.');
+        return;
+      }
+      
       const errorData = err.response?.data;
       
       // Backend'den gelen hata mesajını göster
       if (errorData?.detail) {
-        setError(errorData.detail);
+        setError(`❌ ${errorData.detail}`);
       } else if (errorData?.message) {
-        setError(errorData.message);
+        setError(`❌ ${errorData.message}`);
+      } else if (err.response?.status === 500) {
+        setError('🔧 Sunucu hatası: Email gönderimi şu an çalışmıyor. Lütfen sistem yöneticisine haber verin.');
+      } else if (err.response?.status === 0 || !err.response) {
+        setError('🌐 Sunucuya bağlanılamadı. İnternet bağlantınızı kontrol edin.');
       } else {
-        setError('Bir hata oluştu. Lütfen tekrar deneyin.');
+        setError('❌ Bir hata oluştu. Lütfen tekrar deneyin.');
       }
     } finally {
       setLoading(false);
