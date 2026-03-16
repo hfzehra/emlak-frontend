@@ -1,5 +1,6 @@
 ﻿﻿﻿import { useEffect, useState } from 'react';
 import { apiClient } from '../../services/apiClient';
+import { PhoneInput } from '../../components/PhoneInput';
 import './Persons.css';
 
 // Icons
@@ -78,8 +79,31 @@ export const Persons = () => {
     
     // Telefon formatı düzenle (sadece rakamlar)
     const cleanPhone = form.phone.replace(/\D/g, '');
-    if (cleanPhone.length < 10) {
-      setFormError('Telefon numarası en az 10 haneli olmalıdır.');
+    
+    // Telefon validasyonu
+    if (cleanPhone.length !== 11) {
+      setFormError('Telefon numarası tam olarak 11 haneli olmalıdır. Format: 0(5XX) XXX XX XX');
+      return;
+    }
+    
+    if (!cleanPhone.startsWith('05')) {
+      setFormError('Telefon numarası 0(5 ile başlamalıdır.');
+      return;
+    }
+    
+    // Email validasyonu
+    if (form.email && !form.email.includes('@')) {
+      setFormError('E-posta adresi @ karakteri içermelidir.');
+      return;
+    }
+    
+    // Telefon benzersizlik kontrolü (düzenleme modunda kendi numarasını kontrol etme)
+    const duplicatePhone = persons.find(p => 
+      p.phone === cleanPhone && (!editingPerson || p.id !== editingPerson.id)
+    );
+    
+    if (duplicatePhone) {
+      setFormError(`Bu telefon numarası (${cleanPhone}) zaten kayıtlı: ${duplicatePhone.fullName}`);
       return;
     }
     
@@ -181,18 +205,14 @@ export const Persons = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label>Telefon *</label>
-                  <input
-                    type="tel"
+                  <PhoneInput 
                     value={form.phone}
-                    onChange={e => {
-                      const value = e.target.value.replace(/\D/g, '').slice(0, 11);
-                      setForm({ ...form, phone: value });
-                    }}
-                    placeholder="05321234567"
-                    maxLength={11}
+                    onChange={phone => setForm({ ...form, phone })}
                     required
                   />
-                  <small style={{ color: '#64748b', fontSize: '0.85rem' }}>Format: 0(5XX) XXX XX XX</small>
+                  <small style={{ color: '#ef4444', fontSize: '0.85rem', marginTop: '0.25rem', display: 'block' }}>
+                    Format: 0(5XX) XXX XX XX - Benzersiz olmalı
+                  </small>
                 </div>
                 <div className="form-group">
                   <label>E-posta</label>
@@ -202,6 +222,9 @@ export const Persons = () => {
                     onChange={e => setForm({ ...form, email: e.target.value })}
                     placeholder="ornek@email.com"
                   />
+                  <small style={{ color: '#64748b', fontSize: '0.85rem', marginTop: '0.25rem', display: 'block' }}>
+                    @ karakteri zorunludur (opsiyonel)
+                  </small>
                 </div>
               </div>
               <div className="form-group">

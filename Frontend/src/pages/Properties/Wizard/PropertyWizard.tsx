@@ -52,10 +52,26 @@ const Step1Owner = ({ data, onChange }: StepProps) => {
       </div>
       {mode === 'new' ? (
         <div className="form-grid">
-          <div className="form-group"><label>Ad *</label><input value={data.ownerFirstName ?? ''} onChange={e => onChange({ ownerFirstName: e.target.value })} placeholder="Ahmet" /></div>
-          <div className="form-group"><label>Soyad *</label><input value={data.ownerLastName ?? ''} onChange={e => onChange({ ownerLastName: e.target.value })} placeholder="Yılmaz" /></div>
-          <div className="form-group"><label>Telefon *</label><PhoneInput value={data.ownerPhone ?? ''} onChange={v => onChange({ ownerPhone: v })} /></div>
-          <div className="form-group"><label>E-posta</label><input type="email" value={data.ownerEmail ?? ''} onChange={e => onChange({ ownerEmail: e.target.value })} /></div>
+          <div className="form-group">
+            <label>Ad *</label>
+            <input value={data.ownerFirstName ?? ''} onChange={e => onChange({ ownerFirstName: e.target.value })} placeholder="Ahmet" />
+            <small style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>En az 2 karakter giriniz</small>
+          </div>
+          <div className="form-group">
+            <label>Soyad *</label>
+            <input value={data.ownerLastName ?? ''} onChange={e => onChange({ ownerLastName: e.target.value })} placeholder="Yılmaz" />
+            <small style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>En az 2 karakter giriniz</small>
+          </div>
+          <div className="form-group">
+            <label>Telefon *</label>
+            <PhoneInput value={data.ownerPhone ?? ''} onChange={v => onChange({ ownerPhone: v })} />
+            <small style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>Format: 0(5XX) XXX XX XX - Benzersiz olmalı</small>
+          </div>
+          <div className="form-group">
+            <label>E-posta</label>
+            <input type="email" value={data.ownerEmail ?? ''} onChange={e => onChange({ ownerEmail: e.target.value })} />
+            <small style={{ color: '#64748b', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>@ karakteri zorunludur (opsiyonel)</small>
+          </div>
         </div>
       ) : (
         <div>
@@ -84,16 +100,44 @@ const Step2Rental = ({ data, onChange }: StepProps) => (
       <>
         <h4 style={{ marginTop: '1.5rem' }}>Kiracı Bilgileri</h4>
         <div className="form-grid">
-          <div className="form-group"><label>Kiracı Adı *</label><input value={data.tenantFirstName ?? ''} onChange={e => onChange({ tenantFirstName: e.target.value })} /></div>
-          <div className="form-group"><label>Kiracı Soyadı *</label><input value={data.tenantLastName ?? ''} onChange={e => onChange({ tenantLastName: e.target.value })} /></div>
-          <div className="form-group"><label>Telefon *</label><PhoneInput value={data.tenantPhone ?? ''} onChange={v => onChange({ tenantPhone: v })} /></div>
-          <div className="form-group"><label>E-posta</label><input type="email" value={data.tenantEmail ?? ''} onChange={e => onChange({ tenantEmail: e.target.value })} /></div>
+          <div className="form-group">
+            <label>Kiracı Adı *</label>
+            <input value={data.tenantFirstName ?? ''} onChange={e => onChange({ tenantFirstName: e.target.value })} />
+            <small style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>En az 2 karakter giriniz</small>
+          </div>
+          <div className="form-group">
+            <label>Kiracı Soyadı *</label>
+            <input value={data.tenantLastName ?? ''} onChange={e => onChange({ tenantLastName: e.target.value })} />
+            <small style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>En az 2 karakter giriniz</small>
+          </div>
+          <div className="form-group">
+            <label>Telefon *</label>
+            <PhoneInput value={data.tenantPhone ?? ''} onChange={v => onChange({ tenantPhone: v })} />
+            <small style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>Format: 0(5XX) XXX XX XX - Benzersiz olmalı</small>
+          </div>
+          <div className="form-group">
+            <label>E-posta</label>
+            <input type="email" value={data.tenantEmail ?? ''} onChange={e => onChange({ tenantEmail: e.target.value })} />
+            <small style={{ color: '#64748b', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>@ karakteri zorunludur (opsiyonel)</small>
+          </div>
         </div>
         <h4 style={{ marginTop: '1.5rem' }}>Sözleşme Bilgileri</h4>
         <div className="form-grid">
-          <div className="form-group"><label>Depozito (₺)</label><input type="number" value={data.deposit ?? ''} onChange={e => onChange({ deposit: +e.target.value })} placeholder="Opsiyonel" /></div>
-          <div className="form-group"><label>Başlangıç Tarihi *</label><input type="date" value={data.contractStartDate ?? ''} onChange={e => onChange({ contractStartDate: e.target.value })} /></div>
-          <div className="form-group"><label>Bitiş Tarihi *</label><input type="date" value={data.contractEndDate ?? ''} onChange={e => onChange({ contractEndDate: e.target.value })} /></div>
+          <div className="form-group">
+            <label>Depozito (₺)</label>
+            <input type="number" value={data.deposit ?? ''} onChange={e => onChange({ deposit: +e.target.value })} placeholder="Opsiyonel" />
+            <small style={{ color: '#64748b', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>İsteğe bağlı</small>
+          </div>
+          <div className="form-group">
+            <label>Başlangıç Tarihi *</label>
+            <input type="date" value={data.contractStartDate ?? ''} onChange={e => onChange({ contractStartDate: e.target.value })} />
+            <small style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>Zorunlu - Bitiş tarihinden önce olmalı</small>
+          </div>
+          <div className="form-group">
+            <label>Bitiş Tarihi *</label>
+            <input type="date" value={data.contractEndDate ?? ''} onChange={e => onChange({ contractEndDate: e.target.value })} />
+            <small style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>Zorunlu - En az 1 ay sonra olmalı</small>
+          </div>
         </div>
       </>
     )}
@@ -150,6 +194,7 @@ const Step3Property = ({ data, onChange }: StepProps) => {
               </option>
             ))}
           </select>
+          <small style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>Zorunlu - Bir şehir seçiniz</small>
         </div>
         <div className="form-group">
           <label>İlçe *</label>
@@ -165,15 +210,30 @@ const Step3Property = ({ data, onChange }: StepProps) => {
               </option>
             ))}
           </select>
+          <small style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>Zorunlu - Önce şehir seçiniz</small>
         </div>
-        <div className="form-group form-full"><label>Kısa Adres *</label><input value={data.shortAddress ?? ''} onChange={e => onChange({ shortAddress: e.target.value })} placeholder="Moda Cad. No:5 D:3" /></div>
-        <div className="form-group"><label>Mülk Tipi</label>
+        <div className="form-group form-full">
+          <label>Kısa Adres *</label>
+          <input value={data.shortAddress ?? ''} onChange={e => onChange({ shortAddress: e.target.value })} placeholder="Moda Cad. No:5 D:3" />
+          <small style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>En az 10 karakter - Mahalle, sokak, bina bilgileri</small>
+        </div>
+        <div className="form-group">
+          <label>Mülk Tipi</label>
           <select value={data.propertyType ?? 0} onChange={e => onChange({ propertyType: +e.target.value })}>
             {PROPERTY_TYPES.map((t, i) => <option key={i} value={i}>{t}</option>)}
           </select>
+          <small style={{ color: '#64748b', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>Mülkün türünü seçiniz</small>
         </div>
-        <div className="form-group"><label>Oda Sayısı</label><input type="number" value={data.roomCount ?? ''} onChange={e => onChange({ roomCount: +e.target.value })} placeholder="3" /></div>
-        <div className="form-group"><label>Alan (m²)</label><input type="number" value={data.area ?? ''} onChange={e => onChange({ area: +e.target.value })} placeholder="120" /></div>
+        <div className="form-group">
+          <label>Oda Sayısı</label>
+          <input type="number" value={data.roomCount ?? ''} onChange={e => onChange({ roomCount: +e.target.value })} placeholder="3" />
+          <small style={{ color: '#64748b', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>0-20 arası (opsiyonel)</small>
+        </div>
+        <div className="form-group">
+          <label>Alan (m²)</label>
+          <input type="number" value={data.area ?? ''} onChange={e => onChange({ area: +e.target.value })} placeholder="120" />
+          <small style={{ color: '#64748b', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>1-100.000 m² arası (opsiyonel)</small>
+        </div>
       </div>
     </div>
   );
@@ -237,6 +297,7 @@ const Step4Financial = ({ data, onChange }: StepProps) => {
             }}
             placeholder="Minimum 1.000 TL" 
           />
+          <small style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>Zorunlu - Minimum 1.000 TL, sadece rakam giriniz</small>
         </div>
         <div className="form-group">
           <label>Kira Vadesi (Ayın Kaçı)</label>
@@ -253,6 +314,7 @@ const Step4Financial = ({ data, onChange }: StepProps) => {
               }
             }}
           />
+          <small style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>1-31 arası bir gün giriniz</small>
         </div>
       </div>
 
