@@ -101,7 +101,7 @@ export const Login = () => {
           <div className="auth-field">
             <div className="auth-field-header">
               <label>Şifre</label>
-              <Link to="/sifre-sifirla" className="auth-forgot">Şifremi Unuttum?</Link>
+              <Link to="/sifremi-unuttum" className="auth-forgot">Şifremi Unuttum?</Link>
             </div>
             <div className="password-input-wrapper">
               <input

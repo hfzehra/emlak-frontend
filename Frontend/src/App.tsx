@@ -12,6 +12,7 @@ import { SuperAdmin } from './pages/SuperAdmin/SuperAdmin';
 import { Profile } from './pages/Profile/Profile';
 import { Login } from './pages/Login/Login';
 import { Register } from './pages/Register/Register';
+import { ForgotPassword } from './pages/ForgotPassword/ForgotPassword';
 import { ResetPassword } from './pages/ResetPassword/ResetPassword';
 import './App.css';
 
@@ -21,6 +22,7 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/sifremi-unuttum" element={<ForgotPassword />} />
         <Route path="/sifre-sifirla" element={<ResetPassword />} />
         <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
           <Route index element={<Dashboard />} />
