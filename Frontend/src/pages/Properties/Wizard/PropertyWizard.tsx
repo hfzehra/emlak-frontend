@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../../services/apiClient';
 import { getCities, getDistricts, type City, type District } from '../../../services/turkeyApi';
 import { PhoneInput } from '../../../components/PhoneInput';
+import { GoogleAddressInput } from '../../../components/GoogleAddressInput';
 import './PropertyWizard.css';
 
 // ---- Types ----
@@ -214,8 +215,14 @@ const Step3Property = ({ data, onChange }: StepProps) => {
         </div>
         <div className="form-group form-full">
           <label>Kısa Adres *</label>
-          <input value={data.shortAddress ?? ''} onChange={e => onChange({ shortAddress: e.target.value })} placeholder="Moda Cad. No:5 D:3" />
-          <small style={{ color: '#ef4444', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>En az 10 karakter - Mahalle, sokak, bina bilgileri</small>
+          <GoogleAddressInput 
+            value={data.shortAddress ?? ''} 
+            onChange={(address) => onChange({ shortAddress: address })} 
+            placeholder="Adres aramaya başlayın (örn: Moda Caddesi No:5)" 
+          />
+          <small style={{ color: '#64748b', fontSize: '0.8rem', marginTop: '0.25rem', display: 'block' }}>
+            📍 Google Maps ile adres arayın veya manuel girin - En az 10 karakter
+          </small>
         </div>
         <div className="form-group">
           <label>Mülk Tipi</label>

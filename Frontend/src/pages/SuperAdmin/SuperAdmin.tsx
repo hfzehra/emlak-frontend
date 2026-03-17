@@ -31,9 +31,13 @@ export const SuperAdmin = () => {
   const [detailLoading, setDetailLoading] = useState(false);
 
   useEffect(() => {
+    fetchCompanies();
+  }, []);
+
+  const fetchCompanies = () => {
     apiClient.get<CompanyStats[]>('/super-admin/companies')
       .then(r => setCompanies(r.data)).catch(() => {}).finally(() => setLoading(false));
-  }, []);
+  };
 
   const loadCompanyDetails = async (companyId: string) => {
     setDetailLoading(true);
@@ -44,6 +48,29 @@ export const SuperAdmin = () => {
       console.error('Şirket detayı yüklenemedi:', err);
     } finally {
       setDetailLoading(false);
+    }
+  };
+
+  const toggleCompanyStatus = async (e: React.MouseEvent, companyId: string) => {
+    e.stopPropagation(); // Satıra tıklama olayını engelle
+    const company = companies.find(c => c.id === companyId);
+    if (!company) return;
+    
+    const action = company.isActive ? 'pasif' : 'aktif';
+    if (!confirm(`${company.name} şirketini ${action} duruma getirmek istediğinize emin misiniz?\n\n${company.isActive ? 'Pasif duruma getirildiğinde şirket kullanıcıları sisteme giriş yapamayacak ve işlem yapamayacaklar.' : 'Aktif duruma getirildiğinde şirket kullanıcıları tekrar sisteme giriş yapabilecek.'}`)) {
+      return;
+    }
+
+    try {
+      await apiClient.patch(`/super-admin/companies/${companyId}/toggle-status`);
+      fetchCompanies(); // Listeyi yenile
+      if (selectedCompany?.id === companyId) {
+        loadCompanyDetails(companyId); // Detay açıksa onu da yenile
+      }
+      alert(`Şirket başarıyla ${action} duruma getirildi.`);
+    } catch (err: any) {
+      console.error('Şirket durumu değiştirilemedi:', err);
+      alert(err.response?.data?.detail || 'Şirket durumu değiştirilemedi.');
     }
   };
 
@@ -72,7 +99,7 @@ export const SuperAdmin = () => {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead>
               <tr style={{ background: '#f9fafb', borderBottom: '2px solid #f3f4f6' }}>
-                {['Şirket', 'E-posta', 'Durum', 'Son Giriş', 'Mülkler', 'Kullanıcılar', 'Üyelik'].map(h => (
+                {['Şirket', 'E-posta', 'Durum', 'Son Giriş', 'Mülkler', 'Kullanıcılar', 'Üyelik', 'İşlemler'].map(h => (
                   <th key={h} style={{ padding: '0.875rem 1rem', textAlign: 'left', fontSize: '0.78rem', fontWeight: 700, color: '#6b7280', textTransform: 'uppercase' }}>{h}</th>
                 ))}
               </tr>
@@ -106,6 +133,33 @@ export const SuperAdmin = () => {
                   <td style={{ padding: '0.875rem 1rem', textAlign: 'center', fontWeight: 600 }}>{c.totalUsers}</td>
                   <td style={{ padding: '0.875rem 1rem', color: '#9ca3af', fontSize: '0.8rem' }}>
                     {new Date(c.createdAt).toLocaleDateString('tr-TR')}
+                  </td>
+                  <td style={{ padding: '0.875rem 1rem' }}>
+                    <button
+                      onClick={(e) => toggleCompanyStatus(e, c.id)}
+                      style={{
+                        padding: '0.4rem 0.85rem',
+                        borderRadius: 6,
+                        border: 'none',
+                        fontSize: '0.8rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        background: c.isActive ? '#fee2e2' : '#dcfce7',
+                        color: c.isActive ? '#dc2626' : '#16a34a',
+                        transition: 'all 0.2s'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = 'scale(1.05)';
+                        e.currentTarget.style.boxShadow = '0 2px 8px rgba(0,0,0,0.15)';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = 'scale(1)';
+                        e.currentTarget.style.boxShadow = 'none';
+                      }}
+                      title={c.isActive ? 'Şirketi pasife al' : 'Şirketi aktifleştir'}
+                    >
+                      {c.isActive ? '🔒 Pasife Al' : '✅ Aktifleştir'}
+                    </button>
                   </td>
                 </tr>
               ))}
