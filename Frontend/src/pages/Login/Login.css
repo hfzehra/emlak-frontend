@@ -181,6 +181,42 @@
   outline: none;
 }
 
+/* Auth Input Wrapper (for reset password & other forms) */
+.auth-input-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.auth-input-wrapper input {
+  padding-right: 2.75rem !important;
+  width: 100%;
+}
+
+.auth-eye-btn {
+  position: absolute;
+  right: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #64748b;
+  padding: 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+  z-index: 10;
+}
+
+.auth-eye-btn:hover {
+  color: #334155;
+}
+
+.auth-eye-btn:focus {
+  outline: none;
+}
+
 /* ── Submit button ────────────────────────────────────────── */
 .auth-btn {
   margin-top: 0.25rem;
