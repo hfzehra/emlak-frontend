@@ -1,6 +1,7 @@
-﻿import { useEffect, useState } from 'react';
+﻿﻿import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../../services/apiClient';
+import { CloseIcon } from '../../components/Icons';
 import './Properties.css';
 
 // Icons
@@ -189,10 +190,10 @@ export const Properties = () => {
             {(dateFrom || dateTo) && (
               <button
                 onClick={() => { setDateFrom(''); setDateTo(''); }}
-                style={{ padding: '0.45rem 0.7rem', background: '#f1f5f9', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem', color: '#64748b' }}
+                style={{ padding: '0.45rem 0.7rem', background: '#f1f5f9', border: 'none', borderRadius: '8px', cursor: 'pointer', fontSize: '0.8rem', color: '#64748b', display: 'flex', alignItems: 'center' }}
                 title="Tarihleri Temizle"
               >
-                ✕
+                <CloseIcon size={14} />
               </button>
             )}
           </div>

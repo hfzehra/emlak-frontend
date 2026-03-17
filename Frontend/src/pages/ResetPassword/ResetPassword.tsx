@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { authApi } from '../../services/authApi';
+import { CheckCircleIcon } from '../../components/Icons';
 import '../Login/Login.css';
 
 interface ResetForm {
@@ -71,7 +72,9 @@ export const ResetPassword = () => {
         <div className="auth-card">
           <div className="auth-logo"><span>Emlak SaaS</span></div>
           <div style={{ textAlign: 'center', padding: '1rem 0' }}>
-            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>✅</div>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem', display: 'flex', justifyContent: 'center' }}>
+              <CheckCircleIcon size={64} color="#10b981" />
+            </div>
             <h1 className="auth-title">Şifre Güncellendi!</h1>
             <p style={{ color: 'rgba(255,255,255,0.75)', marginBottom: '1.5rem', lineHeight: 1.6 }}>
               Şifreniz başarıyla güncellendi. Yeni şifrenizle giriş yapabilirsiniz.

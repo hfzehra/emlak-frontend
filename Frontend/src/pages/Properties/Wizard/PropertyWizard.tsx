@@ -4,6 +4,7 @@ import { apiClient } from '../../../services/apiClient';
 import { getCities, getDistricts, type City, type District } from '../../../services/turkeyApi';
 import { PhoneInput } from '../../../components/PhoneInput';
 import { GoogleAddressInput } from '../../../components/GoogleAddressInput';
+import { MapPinIcon, MoneyIcon, CalendarIcon, ListIcon, CheckIcon } from '../../../components/Icons';
 import './PropertyWizard.css';
 
 // ---- Types ----
@@ -82,7 +83,12 @@ const Step1Owner = ({ data, onChange }: StepProps) => {
               <strong>{r.fullName}</strong> — {r.phone}
             </div>
           ))}
-          {data.existingOwnerId && <p className="selected-info">✓ Sahip Seçildi</p>}
+          {data.existingOwnerId && (
+            <p className="selected-info" style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+              <CheckIcon size={16} color="#10b981" />
+              Sahip Seçildi
+            </p>
+          )}
         </div>
       )}
     </div>
@@ -370,10 +376,22 @@ const Step4Financial = ({ data, onChange }: StepProps) => {
       </div>
 
       <div className="wizard-summary" style={{ marginTop: '1.2rem' }}>
-        <h4>📋 Özet</h4>
-        <p>📍 {data.district}, {data.city} — {data.shortAddress}</p>
-        <p>💰 Aylık Kira: <strong>{(data.monthlyRent ?? 0).toLocaleString('tr-TR')} ₺</strong></p>
-        <p>🗓️ Vade: Ayın {data.rentDueDay ?? 1}. günü</p>
+        <h4 style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <ListIcon size={18} />
+          Özet
+        </h4>
+        <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <MapPinIcon size={16} />
+          {data.district}, {data.city} — {data.shortAddress}
+        </p>
+        <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <MoneyIcon size={16} />
+          Aylık Kira: <strong>{(data.monthlyRent ?? 0).toLocaleString('tr-TR')} ₺</strong>
+        </p>
+        <p style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <CalendarIcon size={16} />
+          Vade: Ayın {data.rentDueDay ?? 1}. günü
+        </p>
         <p>🏠 Durum: <strong>{data.isRented ? 'Kirada' : 'Boş'}</strong></p>
       </div>
     </div>

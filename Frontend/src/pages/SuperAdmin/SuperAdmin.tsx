@@ -1,5 +1,6 @@
-﻿import { useEffect, useState } from 'react';
+﻿﻿import { useEffect, useState } from 'react';
 import { apiClient } from '../../services/apiClient';
+import { ShieldIcon, BuildingIcon, UsersIcon, LockIcon, UnlockIcon, CloseIcon } from '../../components/Icons';
 
 interface CompanyStats {
   id: string; name: string; email: string; phone: string;
@@ -79,7 +80,10 @@ export const SuperAdmin = () => {
 
   return (
     <div style={{ maxWidth: 1400, margin: '0 auto', padding: '1rem' }}>
-      <h1 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '1.5rem' }}>🛡️ SuperAdmin Paneli</h1>
+      <h1 style={{ fontSize: '1.75rem', fontWeight: 700, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <ShieldIcon size={28} color="#6366f1" />
+        SuperAdmin Paneli
+      </h1>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '2rem' }}>
         {[
@@ -158,7 +162,17 @@ export const SuperAdmin = () => {
                       }}
                       title={c.isActive ? 'Şirketi pasife al' : 'Şirketi aktifleştir'}
                     >
-                      {c.isActive ? '🔒 Pasife Al' : '✅ Aktifleştir'}
+                      {c.isActive ? (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <LockIcon size={14} />
+                          Pasife Al
+                        </span>
+                      ) : (
+                        <span style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+                          <UnlockIcon size={14} />
+                          Aktifleştir
+                        </span>
+                      )}
                     </button>
                   </td>
                 </tr>
@@ -178,7 +192,9 @@ export const SuperAdmin = () => {
                 <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 700 }}>{selectedCompany.name}</h2>
                 <p style={{ margin: '0.25rem 0 0', color: '#6b7280', fontSize: '0.875rem' }}>{selectedCompany.email} • {selectedCompany.phone}</p>
               </div>
-              <button onClick={() => setSelectedCompany(null)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#9ca3af' }}>✕</button>
+              <button onClick={() => setSelectedCompany(null)} style={{ background: 'none', border: 'none', fontSize: '1.5rem', cursor: 'pointer', color: '#9ca3af', display: 'flex', alignItems: 'center' }}>
+                <CloseIcon size={20} />
+              </button>
             </div>
 
             {detailLoading ? (
@@ -188,7 +204,8 @@ export const SuperAdmin = () => {
                 {/* Mülkler */}
                 <div style={{ marginBottom: '2rem' }}>
                   <h3 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    🏠 Mülkler ({selectedCompany.properties.length})
+                    <BuildingIcon size={20} color="#6366f1" />
+                    Mülkler ({selectedCompany.properties.length})
                   </h3>
                   {selectedCompany.properties.length === 0 ? (
                     <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>Henüz mülk eklenmemiş.</p>
@@ -223,7 +240,8 @@ export const SuperAdmin = () => {
                 {/* Kullanıcılar */}
                 <div>
                   <h3 style={{ fontSize: '1.125rem', fontWeight: 700, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                    👥 Kullanıcılar ({selectedCompany.users.length})
+                    <UsersIcon size={20} color="#6366f1" />
+                    Kullanıcılar ({selectedCompany.users.length})
                   </h3>
                   {selectedCompany.users.length === 0 ? (
                     <p style={{ color: '#9ca3af', fontSize: '0.875rem' }}>Henüz kullanıcı eklenmemiş.</p>

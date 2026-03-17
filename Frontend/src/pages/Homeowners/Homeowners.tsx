@@ -5,6 +5,7 @@ import {
   useUpdateHomeownerMutation, 
   useDeleteHomeownerMutation 
 } from '../../services/homeownerApi';
+import { SettingsIcon, TrashIcon } from '../../components/Icons';
 import './Homeowners.css';
 
 export const Homeowners = () => {
@@ -54,7 +55,7 @@ export const Homeowners = () => {
     }
   };
 
-  const handleEdit = (homeowner: any) => {
+  const openEditModal = (homeowner: any) => {
     setFormData({
       name: homeowner.name,
       phone: homeowner.phone,
@@ -88,7 +89,7 @@ export const Homeowners = () => {
     setShowForm(false);
   };
 
-  const filteredHomeowners = homeowners.filter(h => {
+  const filteredHomeowners = homeowners.filter((h: any) => {
     const matchesSearch = 
       h.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       h.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -196,7 +197,7 @@ export const Homeowners = () => {
           </thead>
           <tbody>
             {filteredHomeowners.length > 0 ? (
-              filteredHomeowners.map((homeowner) => (
+              filteredHomeowners.map((homeowner: any) => (
                 <tr key={homeowner.id}>
                   <td><strong>{homeowner.name}</strong></td>
                   <td>{homeowner.phone}</td>
@@ -206,17 +207,17 @@ export const Homeowners = () => {
                   <td className="action-buttons">
                     <button 
                       className="edit-icon"
-                      onClick={() => handleEdit(homeowner)}
+                      onClick={() => openEditModal(homeowner)}
                       title="Düzenle"
                     >
-                      ⚙️
+                      <SettingsIcon size={16} />
                     </button>
                     <button 
                       className="delete-icon"
                       onClick={() => handleDelete(homeowner.id)}
                       title="Sil"
                     >
-                      🗑️
+                      <TrashIcon size={16} />
                     </button>
                   </td>
                 </tr>

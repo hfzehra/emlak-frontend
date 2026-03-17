@@ -1,5 +1,6 @@
-﻿﻿import { useState, useEffect } from 'react';
+﻿import { useState, useEffect } from 'react';
 import { apiClient } from '../../services/apiClient';
+import { DocumentIcon, AlertCircleIcon, ClockIcon, BellIcon, CloseIcon } from '../Icons';
 import './NotificationBell.css';
 
 interface Notification {
@@ -34,10 +35,10 @@ export const NotificationBell = () => {
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   const typeIcon = (type: string) => {
-    if (type.includes('Contract')) return '📋';
-    if (type.includes('Overdue')) return '🔴';
-    if (type.includes('Due')) return '⏰';
-    return '🔔';
+    if (type.includes('Contract')) return <DocumentIcon size={18} />;
+    if (type.includes('Overdue')) return <AlertCircleIcon size={18} color="#ef4444" />;
+    if (type.includes('Due')) return <ClockIcon size={18} color="#f59e0b" />;
+    return <BellIcon size={18} />;
   };
 
   return (
@@ -54,7 +55,9 @@ export const NotificationBell = () => {
         <div className="notification-dropdown">
           <div className="notif-header">
             <span>Bildirimler</span>
-            <button className="close-btn" onClick={() => setOpen(false)}>✕</button>
+            <button className="close-btn" onClick={() => setOpen(false)}>
+              <CloseIcon size={16} />
+            </button>
           </div>
           {notifications.length === 0 ? (
             <div className="no-notif">Bildirim yok</div>
