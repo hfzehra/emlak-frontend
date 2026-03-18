@@ -1,4 +1,4 @@
-﻿import { useState } from 'react';
+﻿import { useState, useMemo, useCallback, memo } from 'react';
 import { 
   useGetHomeownersQuery, 
   useCreateHomeownerMutation, 
@@ -7,6 +7,76 @@ import {
 } from '../../services/homeownerApi';
 import { SettingsIcon, TrashIcon } from '../../components/Icons';
 import './Homeowners.css';
+
+// Form component'ini memoize et
+const HomeownerForm = memo(({ 
+  formData, 
+  setFormData, 
+  handleSubmit, 
+  resetForm, 
+  editingId 
+}: any) => (
+  <div className="form-container">
+    <form onSubmit={handleSubmit} className="homeowner-form">
+      <div className="form-row">
+        <div className="form-group">
+          <label>Ad Soyad *</label>
+          <input 
+            type="text" 
+            value={formData.name}
+            onChange={(e) => setFormData({...formData, name: e.target.value})}
+            required
+            placeholder="Ev sahibinin adını girin"
+          />
+        </div>
+        <div className="form-group">
+          <label>Telefon *</label>
+          <input 
+            type="tel" 
+            value={formData.phone}
+            onChange={(e) => setFormData({...formData, phone: e.target.value})}
+            required
+            placeholder="5XX XXX XX XX"
+          />
+        </div>
+        <div className="form-group">
+          <label>Email *</label>
+          <input 
+            type="email" 
+            value={formData.email}
+            onChange={(e) => setFormData({...formData, email: e.target.value})}
+            required
+            placeholder="email@example.com"
+          />
+        </div>
+      </div>
+      
+      <div className="form-row">
+        <div className="form-group full-width">
+          <label>Adres *</label>
+          <input 
+            type="text" 
+            value={formData.address}
+            onChange={(e) => setFormData({...formData, address: e.target.value})}
+            required
+            placeholder="Ev sahibinin adresini girin"
+          />
+        </div>
+      </div>
+
+      <div className="form-actions">
+        <button type="submit" className="submit-btn">
+          {editingId ? 'Güncelle' : 'Ekle'}
+        </button>
+        <button type="button" onClick={resetForm} className="cancel-btn">
+          İptal
+        </button>
+      </div>
+    </form>
+  </div>
+));
+
+HomeownerForm.displayName = 'HomeownerForm';
 
 export const Homeowners = () => {
   const { data: homeowners = [], isLoading } = useGetHomeownersQuery();
@@ -25,7 +95,7 @@ export const Homeowners = () => {
     address: ''
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = useCallback(async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {
@@ -53,9 +123,9 @@ export const Homeowners = () => {
       console.error('Hata:', error);
       alert('Bir hata oluştu!');
     }
-  };
+  }, [editingId, formData, createHomeowner, updateHomeowner]);
 
-  const openEditModal = (homeowner: any) => {
+  const openEditModal = useCallback((homeowner: any) => {
     setFormData({
       name: homeowner.name,
       phone: homeowner.phone,
@@ -64,9 +134,9 @@ export const Homeowners = () => {
     });
     setEditingId(homeowner.id);
     setShowForm(true);
-  };
+  }, []);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = useCallback(async (id: string) => {
     if (window.confirm('Bu ev sahibini silmek istediğinizden emin misiniz?')) {
       try {
         await deleteHomeowner(id).unwrap();
@@ -76,9 +146,9 @@ export const Homeowners = () => {
         alert('Silme işlemi başarısız!');
       }
     }
-  };
+  }, [deleteHomeowner]);
 
-  const resetForm = () => {
+  const resetForm = useCallback(() => {
     setFormData({
       name: '',
       phone: '',
@@ -87,19 +157,33 @@ export const Homeowners = () => {
     });
     setEditingId(null);
     setShowForm(false);
-  };
+  }, []);
 
-  const filteredHomeowners = homeowners.filter((h: any) => {
-    const matchesSearch = 
-      h.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      h.phone.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      h.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      h.address.toLowerCase().includes(searchTerm.toLowerCase());
-    
-    return matchesSearch;
-  });
+  // Filtreleme işlemini memoize et - sadece homeowners veya searchTerm değişince hesaplansın
+  const filteredHomeowners = useMemo(() => {
+    return homeowners.filter((h: any) => {
+      const searchLower = searchTerm.toLowerCase();
+      return (
+        h.name.toLowerCase().includes(searchLower) ||
+        h.phone.toLowerCase().includes(searchLower) ||
+        h.email.toLowerCase().includes(searchLower) ||
+        h.address.toLowerCase().includes(searchLower)
+      );
+    });
+  }, [homeowners, searchTerm]);
 
-  if (isLoading) return <div>Yükleniyor...</div>;
+  if (isLoading) {
+    return (
+      <div style={{ 
+        display: 'flex', 
+        justifyContent: 'center', 
+        alignItems: 'center', 
+        height: '50vh' 
+      }}>
+        Yükleniyor...
+      </div>
+    );
+  }
 
   return (
     <div className="homeowners-page">
@@ -123,64 +207,13 @@ export const Homeowners = () => {
       </div>
 
       {showForm && (
-        <div className="form-container">
-          <form onSubmit={handleSubmit} className="homeowner-form">
-            <div className="form-row">
-              <div className="form-group">
-                <label>Ad Soyad *</label>
-                <input 
-                  type="text" 
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  required
-                  placeholder="Ev sahibinin adını girin"
-                />
-              </div>
-              <div className="form-group">
-                <label>Telefon *</label>
-                <input 
-                  type="tel" 
-                  value={formData.phone}
-                  onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                  required
-                  placeholder="5XX XXX XX XX"
-                />
-              </div>
-              <div className="form-group">
-                <label>Email *</label>
-                <input 
-                  type="email" 
-                  value={formData.email}
-                  onChange={(e) => setFormData({...formData, email: e.target.value})}
-                  required
-                  placeholder="email@example.com"
-                />
-              </div>
-            </div>
-            
-            <div className="form-row">
-              <div className="form-group full-width">
-                <label>Adres *</label>
-                <input 
-                  type="text" 
-                  value={formData.address}
-                  onChange={(e) => setFormData({...formData, address: e.target.value})}
-                  required
-                  placeholder="Ev sahibinin adresini girin"
-                />
-              </div>
-            </div>
-
-            <div className="form-actions">
-              <button type="submit" className="submit-btn">
-                {editingId ? 'Güncelle' : 'Ekle'}
-              </button>
-              <button type="button" onClick={resetForm} className="cancel-btn">
-                İptal
-              </button>
-            </div>
-          </form>
-        </div>
+        <HomeownerForm
+          formData={formData}
+          setFormData={setFormData}
+          handleSubmit={handleSubmit}
+          resetForm={resetForm}
+          editingId={editingId}
+        />
       )}
 
       <div className="table-container">
