@@ -1,4 +1,4 @@
-﻿/* Profile Page - Modern Minimalist Design */
+﻿﻿/* Profile Page - Modern Minimalist Design */
 .profile-page {
   padding: 1rem;
   max-width: 1200px;
@@ -372,3 +372,111 @@
     font-size: 0.875rem;
   }
 }
+
+/* ================================================
+   DEMO RESET CARD - Specific Styles
+   ================================================ */
+.demo-reset-card {
+  border: 2px solid #fef3c7;
+  background: linear-gradient(to bottom, #fffbeb, #ffffff);
+}
+
+.demo-reset-card .card-header {
+  background: linear-gradient(135deg, #fbbf24, #f59e0b);
+  color: white;
+}
+
+.demo-info {
+  background: #fef3c7;
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  border-left: 4px solid #f59e0b;
+}
+
+.demo-info p {
+  color: #92400e;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+  line-height: 1.6;
+}
+
+.demo-info ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.demo-info ul li {
+  color: #92400e;
+  font-size: 0.875rem;
+  padding: 0.4rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.demo-info ul li::before {
+  content: '✓';
+  color: #16a34a;
+  font-weight: bold;
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.btn-danger:hover:not(:disabled) {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+.btn-danger:disabled {
+  background: #9ca3af;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background: #e5e7eb;
+  color: #374151;
+  border: 1px solid #d1d5db;
+}
+
+.btn-secondary:hover:not(:disabled) {
+  background: #d1d5db;
+}
+
+.confirm-section {
+  padding: 1.25rem;
+  background: #fef2f2;
+  border: 2px dashed #ef4444;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.confirm-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #dc2626;
+  margin-bottom: 1.25rem;
+}
+
+.confirm-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.confirm-buttons .btn {
+  min-width: 140px;
+}
+
