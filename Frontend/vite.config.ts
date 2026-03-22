@@ -19,7 +19,7 @@ export default defineConfig({
     chunkSizeWarningLimit: 1000,
     // Minification - esbuild (Vite default, terser'dan daha hızlı)
     minify: 'esbuild',
-    // Source map production'da kapalı
+    // Sourcemap production'da kapalı
     sourcemap: false,
   },
   esbuild: {

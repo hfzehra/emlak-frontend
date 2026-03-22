@@ -1,5 +1,6 @@
 ﻿import { useState, useEffect } from 'react';
 import { apiClient } from '../../services/apiClient';
+import { demoApi } from '../../services/demoApi';
 import './Profile.css';
 
 // Icons
@@ -28,6 +29,14 @@ const EyeOffIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
     <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/>
     <line x1="1" y1="1" x2="23" y2="23"/>
+  </svg>
+);
+
+const RefreshIcon = () => (
+  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+    <polyline points="23 4 23 10 17 10"/>
+    <polyline points="1 20 1 14 7 14"/>
+    <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
   </svg>
 );
 
@@ -61,6 +70,11 @@ export const Profile = () => {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
+  // Demo reset
+  const [isDemoUser, setIsDemoUser] = useState(false);
+  const [demoResetLoading, setDemoResetLoading] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
+
   useEffect(() => {
     fetchProfile();
   }, []);
@@ -72,6 +86,9 @@ export const Profile = () => {
       setUser(response.data);
       setFirstName(response.data.firstName);
       setLastName(response.data.lastName);
+      
+      // Demo kullanıcısı kontrolü
+      setIsDemoUser(response.data.email === 'demo@emlaksaas.com');
     } catch (err: any) {
       setError('Profil bilgileri yüklenemedi.');
       console.error(err);
@@ -165,6 +182,29 @@ export const Profile = () => {
       setError(err.response?.data?.message || err.response?.data?.detail || 'Şifre güncellenirken hata oluştu.');
     } finally {
       setPasswordLoading(false);
+    }
+  };
+
+  const handleDemoReset = async () => {
+    if (!isDemoUser) return;
+    
+    setError('');
+    setSuccess('');
+    
+    try {
+      setDemoResetLoading(true);
+      const result = await demoApi.reset();
+      setSuccess(result.message);
+      setShowResetConfirm(false);
+      
+      // Sayfayı yenile (veriler güncellensin)
+      setTimeout(() => {
+        window.location.reload();
+      }, 1500);
+    } catch (err: any) {
+      setError(err.response?.data?.message || err.response?.data?.detail || 'Demo sıfırlama sırasında hata oluştu.');
+    } finally {
+      setDemoResetLoading(false);
     }
   };
 
@@ -343,6 +383,66 @@ export const Profile = () => {
             </form>
           </div>
         </div>
+
+        {/* Demo Reset Kartı - Sadece demo kullanıcısı için */}
+        {isDemoUser && (
+          <div className="profile-card profile-card--full demo-reset-card">
+            <div className="card-header">
+              <RefreshIcon />
+              <h2>Demo Hesabı Sıfırlama</h2>
+            </div>
+            <div className="card-body">
+              <div className="demo-info">
+                <p>
+                  Bu demo hesabını test etmek için veriler ekleyip silerek deneyebilirsiniz.
+                  Hesabı sıfırladığınızda, sizin eklediğiniz veriler silinir ancak örnek veriler korunur.
+                </p>
+                <ul>
+                  <li>✓ Eklediğiniz mülkler, kişiler ve sözleşmeler silinir</li>
+                  <li>✓ Örnek demo verileri korunur</li>
+                  <li>✓ Hesap ayarlarınız değişmez</li>
+                  <li>✓ Otomatik temizlik: Her gün saat 03:00'te</li>
+                </ul>
+              </div>
+
+              {!showResetConfirm ? (
+                <button 
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={() => setShowResetConfirm(true)}
+                  disabled={demoResetLoading}
+                >
+                  <RefreshIcon />
+                  Demo Hesabını Sıfırla
+                </button>
+              ) : (
+                <div className="confirm-section">
+                  <p className="confirm-text">
+                    ⚠️ Emin misiniz? Bu işlem geri alınamaz!
+                  </p>
+                  <div className="confirm-buttons">
+                    <button 
+                      type="button"
+                      className="btn btn-danger"
+                      onClick={handleDemoReset}
+                      disabled={demoResetLoading}
+                    >
+                      {demoResetLoading ? 'Sıfırlanıyor...' : 'Evet, Sıfırla'}
+                    </button>
+                    <button 
+                      type="button"
+                      className="btn btn-secondary"
+                      onClick={() => setShowResetConfirm(false)}
+                      disabled={demoResetLoading}
+                    >
+                      İptal
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
